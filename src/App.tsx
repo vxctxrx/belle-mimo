@@ -266,8 +266,9 @@ const ArtStudio = ({
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao gerar arte:", error);
+      alert(`Ops! Não foi possível gerar a imagem.\n\nMotivo comum: A geração de imagens (Imagen 3/4) atualmente requer uma conta com faturamento ativo no Google AI Studio (Plano Pago).\n\nDetalhe técnico: ${error.message || error}`);
     } finally {
       setIsGenerating(false);
     }
