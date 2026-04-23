@@ -146,12 +146,20 @@ const EditableText = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <Tag 
       className={`${className || ''} ${isEditMode ? 'outline-dashed outline-2 outline-primary/50 cursor-text hover:outline-primary transition-all rounded-sm ui-editable' : ''}`}
       contentEditable={isEditMode}
       suppressContentEditableWarning={true}
       onBlur={isEditMode ? handleBlur : undefined}
+      onKeyDown={isEditMode ? handleKeyDown : undefined}
       dangerouslySetInnerHTML={{ __html: text }}
     />
   );
