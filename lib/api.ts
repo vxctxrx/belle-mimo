@@ -1,4 +1,9 @@
-const API_URL = 'http://localhost:3001';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface Product {
   id: string;
@@ -31,82 +36,57 @@ export interface SiteText {
 
 export const api = {
   getProducts: async (): Promise<Product[]> => {
-    try {
-      const res = await fetch(`${API_URL}/products`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch {
-      return [];
-    }
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) return [];
+    return data || [];
   },
   
   createProduct: async (product: Omit<Product, 'id'>): Promise<Product> => {
-    const res = await fetch(`${API_URL}/products`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product),
-    });
-    return res.json();
+    const id = crypto.randomUUID();
+    const newProduct = { ...product, id };
+    const { data, error } = await supabase.from('products').insert([newProduct]).select().single();
+    if (error) throw error;
+    return data;
   },
 
   updateProduct: async (id: string, product: Partial<Product>): Promise<Product> => {
-    const res = await fetch(`${API_URL}/products/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product),
-    });
-    return res.json();
+    const { data, error } = await supabase.from('products').update(product).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
   },
 
   deleteProduct: async (id: string): Promise<void> => {
-    await fetch(`${API_URL}/products/${id}`, {
-      method: 'DELETE',
-    });
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) throw error;
   },
 
   getPrints: async (): Promise<PrintOption[]> => {
-    const res = await fetch(`${API_URL}/prints`);
-    return res.json();
+    const { data, error } = await supabase.from('prints').select('*');
+    if (error) return [];
+    return data || [];
   },
 
   getSiteImages: async (): Promise<SiteImage[]> => {
-    try {
-      const res = await fetch(`${API_URL}/siteImages`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch {
-      return [];
-    }
+    const { data, error } = await supabase.from('siteImages').select('*');
+    if (error) return [];
+    return data || [];
   },
 
   updateSiteImage: async (id: string, siteImage: Partial<SiteImage>): Promise<SiteImage> => {
-    const res = await fetch(`${API_URL}/siteImages/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(siteImage),
-    });
-    return res.json();
+    const { data, error } = await supabase.from('siteImages').update(siteImage).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
   },
 
   getSiteTexts: async (): Promise<SiteText[]> => {
-    try {
-      const res = await fetch(`${API_URL}/siteTexts`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch {
-      return [];
-    }
+    const { data, error } = await supabase.from('siteTexts').select('*');
+    if (error) return [];
+    return data || [];
   },
 
   updateSiteText: async (id: string, text: string): Promise<SiteText> => {
-    const res = await fetch(`${API_URL}/siteTexts/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    return res.json();
+    const { data, error } = await supabase.from('siteTexts').update({ text }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
   }
 };
