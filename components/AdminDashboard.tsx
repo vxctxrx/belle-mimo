@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Pencil, Trash2, X, Sparkles, Check, Image as ImageIcon, Upload, Loader2, LayoutDashboard, Image as ImageIconSolid } from 'lucide-react';
-import { api, Product, SiteImage } from '@/lib/api';
+import { Plus, Pencil, Trash2, X, Sparkles, Check, Image as ImageIcon, Upload, Loader2, LayoutDashboard, Image as ImageIconSolid, Star } from 'lucide-react';
+import { api, Product, SiteImage, Testimonial } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -49,11 +49,13 @@ interface AdminDashboardProps {
   onProductsUpdate: (products: Product[]) => void;
   siteImages: SiteImage[];
   onSiteImagesUpdate: (images: SiteImage[]) => void;
-  activeTab: 'products'|'images';
-  onTabChange?: (tab: 'products'|'images') => void;
+  testimonials?: Testimonial[];
+  onTestimonialsUpdate?: (testimonials: Testimonial[]) => void;
+  activeTab: 'products'|'images'|'reviews';
+  onTabChange?: (tab: 'products'|'images'|'reviews') => void;
 }
 
-export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteImagesUpdate, activeTab, onTabChange }: AdminDashboardProps) => {
+export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteImagesUpdate, testimonials = [], onTestimonialsUpdate, activeTab, onTabChange }: AdminDashboardProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   
   // States for products
@@ -62,6 +64,9 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
   
   // States for site images
   const [currentImageEdit, setCurrentImageEdit] = useState<Partial<SiteImage> | null>(null);
+
+  // States for testimonials
+  const [currentReviewEdit, setCurrentReviewEdit] = useState<Partial<Testimonial> | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -72,6 +77,7 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
     setIsAddingNew(false);
     setCurrentEdit(null);
     setCurrentImageEdit(null);
+    setCurrentReviewEdit(null);
   }, [activeTab]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +90,8 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
         setCurrentEdit({ ...currentEdit, image: base64Webp });
       } else if (activeTab === 'images' && currentImageEdit) {
         setCurrentImageEdit({ ...currentImageEdit, image: base64Webp });
+      } else if (activeTab === 'reviews' && currentReviewEdit) {
+        setCurrentReviewEdit({ ...currentReviewEdit, avatar: base64Webp });
       }
     } catch (err) {
       console.error(err);
@@ -157,11 +165,56 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
     setIsLoading(false);
   };
 
+  // --- Review Handlers ---
+  const handleEditReview = (review: Testimonial) => {
+    setEditingId(review.id);
+    setCurrentReviewEdit(review);
+    setIsAddingNew(false);
+  };
+
+  const handleAddNewReview = () => {
+    setIsAddingNew(true);
+    setEditingId(null);
+    setCurrentReviewEdit({
+      name: '', text: '', avatar: '', rating: 5
+    });
+  };
+
+  const handleSaveReview = async (id?: string) => {
+    if (!currentReviewEdit) return;
+    setIsLoading(true);
+    try {
+      if (id) await api.updateTestimonial(id, currentReviewEdit);
+      else await api.createTestimonial(currentReviewEdit as Omit<Testimonial, 'id'>);
+      const updated = await api.getTestimonials();
+      if (onTestimonialsUpdate) onTestimonialsUpdate(updated);
+      setEditingId(null);
+      setIsAddingNew(false);
+      setCurrentReviewEdit(null);
+    } catch (e) {
+      alert('Erro ao salvar avaliação.');
+    }
+    setIsLoading(false);
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    if (confirm('Deseja excluir esta avaliação?')) {
+      setIsLoading(true);
+      try {
+        await api.deleteTestimonial(id);
+        const updated = await api.getTestimonials();
+        if (onTestimonialsUpdate) onTestimonialsUpdate(updated);
+      } catch (e) { alert('Erro ao excluir avaliação.'); }
+      setIsLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setEditingId(null);
     setIsAddingNew(false);
     setCurrentEdit(null);
     setCurrentImageEdit(null);
+    setCurrentReviewEdit(null);
   };
 
   return (
@@ -176,6 +229,11 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
             {activeTab === 'products' && (
               <Button onClick={handleAddNewProduct} disabled={isAddingNew || editingId !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
                 <Plus className="w-5 h-5 mr-2" /> NOVO PRODUTO
+              </Button>
+            )}
+            {activeTab === 'reviews' && (
+              <Button onClick={handleAddNewReview} disabled={isAddingNew || editingId !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
+                <Plus className="w-5 h-5 mr-2" /> NOVA AVALIAÇÃO
               </Button>
             )}
           </div>
@@ -400,6 +458,125 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
           </div>
         </div>
         )}
+
+        {/* --- Tabela de Avaliações --- */}
+        {activeTab === 'reviews' && (
+        <div className="bg-white rounded-3xl shadow-xl border-4 border-white overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="overflow-x-auto hide-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-muted/50 text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
+                  <th className="p-5 px-8">Cliente</th>
+                  <th className="p-5">Avaliação</th>
+                  <th className="p-5 text-center">Nota</th>
+                  <th className="p-5 text-right px-8">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isAddingNew && currentReviewEdit && (
+                  <tr className="bg-primary/5 border-b border-primary/10 transition-colors align-top">
+                    <td className="p-5 px-8">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-full bg-muted overflow-hidden shrink-0 flex items-center justify-center border-2 border-white shadow-sm relative group">
+                          {currentReviewEdit.avatar ? <img src={currentReviewEdit.avatar} className="w-full h-full object-cover" /> : <User className="w-6 h-6 text-muted-foreground/30" />}
+                          {isUploadingImage && <div className="absolute inset-0 bg-white/50 flex flex-col items-center justify-center"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
+                        </div>
+                        <div className="space-y-2 w-full max-w-[200px]">
+                          <div className="flex items-center gap-2">
+                            <Input value={currentReviewEdit.avatar || ''} onChange={e => setCurrentReviewEdit({...currentReviewEdit, avatar: e.target.value})} placeholder="URL Avatar" className="h-8 text-xs bg-white" />
+                            <label className="cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary p-1.5 rounded-md transition-colors shrink-0" title="Subir Foto do PC">
+                              <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                              <Upload className="w-4 h-4" />
+                            </label>
+                          </div>
+                          <Input value={currentReviewEdit.name || ''} onChange={e => setCurrentReviewEdit({...currentReviewEdit, name: e.target.value})} placeholder="Nome do Cliente" className="h-8 font-bold bg-white" />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-5 align-middle">
+                      <textarea value={currentReviewEdit.text || ''} onChange={e => setCurrentReviewEdit({...currentReviewEdit, text: e.target.value})} placeholder="Texto da avaliação..." className="w-full h-20 rounded-xl border border-border bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" />
+                    </td>
+                    <td className="p-5 align-middle text-center">
+                      <Input type="number" min="1" max="5" value={currentReviewEdit.rating || 5} onChange={e => setCurrentReviewEdit({...currentReviewEdit, rating: parseInt(e.target.value)})} className="w-16 h-8 text-center mx-auto bg-white font-bold" />
+                    </td>
+                    <td className="p-5 px-8 align-middle text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button size="icon" variant="ghost" onClick={handleCancel} disabled={isLoading} className="hover:bg-red-50 hover:text-red-500 rounded-xl"><X className="w-5 h-5"/></Button>
+                        <Button size="icon" className="bg-primary text-primary-foreground shadow flex-shrink-0 rounded-xl" onClick={() => handleSaveReview()} disabled={isLoading}><Check className="w-5 h-5"/></Button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+
+                {testimonials.map(review => {
+                  const isEdit = editingId === review.id;
+                  const data = isEdit && currentReviewEdit ? currentReviewEdit : review;
+
+                  return (
+                    <tr key={review.id} className={`border-b border-muted transition-colors align-top ${isEdit ? 'bg-primary/5' : 'hover:bg-muted/30'}`}>
+                      <td className="p-5 px-8">
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-full bg-muted overflow-hidden shrink-0 flex items-center justify-center border-2 border-white shadow-sm relative group">
+                            {data.avatar ? <img src={data.avatar} className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 m-3 text-muted-foreground/30" />}
+                            {isEdit && isUploadingImage && <div className="absolute inset-0 bg-white/50 flex flex-col items-center justify-center"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}
+                          </div>
+                          
+                          {isEdit ? (
+                            <div className="space-y-2 w-full max-w-[200px]">
+                              <div className="flex items-center gap-2">
+                                <Input value={data.avatar || ''} onChange={e => setCurrentReviewEdit({...data, avatar: e.target.value})} placeholder="URL Avatar" className="h-8 text-xs bg-white" />
+                                <label className="cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary p-1.5 rounded-md transition-colors shrink-0" title="Subir Foto do PC">
+                                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                  <Upload className="w-4 h-4" />
+                                </label>
+                              </div>
+                              <Input value={data.name || ''} onChange={e => setCurrentReviewEdit({...data, name: e.target.value})} placeholder="Nome" className="h-8 font-bold bg-white" />
+                            </div>
+                          ) : (
+                            <div className="font-bold">{review.name}</div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-5 align-middle">
+                        {isEdit ? (
+                          <textarea value={data.text || ''} onChange={e => setCurrentReviewEdit({...data, text: e.target.value})} className="w-full h-20 rounded-xl border border-border bg-white p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" />
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic max-w-md">"{review.text}"</p>
+                        )}
+                      </td>
+                      <td className="p-5 align-middle text-center">
+                        {isEdit ? (
+                          <Input type="number" min="1" max="5" value={data.rating || 5} onChange={e => setCurrentReviewEdit({...data, rating: parseInt(e.target.value)})} className="w-16 h-8 text-center mx-auto font-bold bg-white" />
+                        ) : (
+                          <div className="flex justify-center text-primary">
+                            {[...Array(review.rating)].map((_, i) => (
+                              <Star key={i} className="w-4 h-4 fill-primary" />
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-5 px-8 align-middle text-right group">
+                        {isEdit ? (
+                          <div className="flex justify-end gap-2">
+                            <Button size="icon" variant="ghost" onClick={handleCancel} disabled={isLoading} className="hover:bg-red-50 hover:text-red-500 rounded-xl"><X className="w-5 h-5"/></Button>
+                            <Button size="icon" className="bg-primary text-primary-foreground shadow rounded-xl" onClick={() => handleSaveReview(review.id)} disabled={isLoading}><Check className="w-5 h-5"/></Button>
+                          </div>
+                        ) : (
+                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity" style={{ opacity: 1 }}>
+                            <Button size="icon" variant="ghost" className="hover:text-primary hover:bg-primary/10 rounded-xl" onClick={() => handleEditReview(review)} disabled={isAddingNew || editingId !== null}><Pencil className="w-4 h-4"/></Button>
+                            <Button size="icon" variant="ghost" className="hover:text-destructive hover:bg-destructive/10 rounded-xl" onClick={() => handleDeleteReview(review.id)} disabled={isAddingNew || editingId !== null}><Trash2 className="w-4 h-4"/></Button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        )}
+
       </div>
     </div>
   );

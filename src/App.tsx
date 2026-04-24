@@ -39,21 +39,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { api, Product, PrintOption, SiteImage, SiteText } from '@/lib/api';
+import { api, Product, PrintOption, SiteImage, SiteText, Testimonial } from '@/lib/api';
 import { AdminDashboard } from '@/components/AdminDashboard';
 
 interface CartItem extends Product {
   quantity: number;
   selectedPrint?: PrintOption;
   caricaturePhoto?: string;
-}
-
-interface Testimonial {
-  id: number;
-  name: string;
-  avatar: string;
-  text: string;
-  rating: number;
 }
 
 interface UserData {
@@ -77,30 +69,6 @@ const MOCK_PRINTS: PrintOption[] = [
 
 // --- AI Initialization ---
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
-
-const TESTIMONIALS: Testimonial[] = [
-  {
-    id: 1,
-    name: "Ana Silva",
-    avatar: "https://picsum.photos/seed/customer-woman-1/150/150",
-    text: "Ecobag super fofa e resistente! Uso todos os dias.",
-    rating: 5
-  },
-  {
-    id: 2,
-    name: "Mariana Costa",
-    avatar: "https://picsum.photos/seed/customer-woman-2/150/150",
-    text: "A almofada é incrível, muito macia e a cor é linda.",
-    rating: 5
-  },
-  {
-    id: 3,
-    name: "Julia Rocha",
-    avatar: "https://picsum.photos/seed/customer-woman-3/150/150",
-    text: "Avental de ótima qualidade, o bordado ficou perfeito.",
-    rating: 4
-  }
-];
 
 // --- Components ---
 
@@ -618,7 +586,7 @@ const Navbar = ({
   siteImages: SiteImage[];
   isVisualEditMode: boolean;
   setIsVisualEditMode: (val: boolean) => void;
-  onAdminTabChange: (tab: 'products'|'images') => void;
+  onAdminTabChange: (tab: 'products'|'images'|'reviews') => void;
 }) => {
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
@@ -683,6 +651,16 @@ const Navbar = ({
             >
               EDITAR IMAGENS
             </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                onViewChange('admin');
+                onAdminTabChange('reviews');
+              }}
+              className="rounded-full px-6 py-2 font-bold border-2 bg-transparent border-primary/20 text-primary hover:bg-primary/5"
+            >
+              EDITAR AVALIAÇÕES
+            </Button>
           </div>
         )}
       </div>
@@ -714,19 +692,21 @@ const Navbar = ({
           </Button>
         </div>
         
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="rounded-full hover:bg-primary/10 relative w-12 h-12"
-          onClick={onCartClick}
-        >
-          <ShoppingBag className="w-6 h-6" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-6 h-6 bg-secondary text-white text-[10px] flex items-center justify-center rounded-full font-bold border-2 border-white">
-              {cartCount}
-            </span>
-          )}
-        </Button>
+        {user?.isAdmin && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full hover:bg-primary/10 relative w-12 h-12"
+            onClick={onCartClick}
+          >
+            <ShoppingBag className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-6 h-6 bg-secondary text-white text-[10px] flex items-center justify-center rounded-full font-bold border-2 border-white">
+                {cartCount}
+              </span>
+            )}
+          </Button>
+        )}
         
         <div className="flex items-center gap-2">
           {user && (
@@ -809,9 +789,6 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <Badge className="bg-secondary hover:bg-secondary text-white mb-6 px-6 py-2 rounded-full text-sm font-bold shadow-sm inline-flex items-center gap-2">
-          ✨ <EditableText id="hero_badge" fallback="NOVA COLEÇÃO PRIMAVERA 2024" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-        </Badge>
         <EditableText 
           id="hero_title" 
           fallback="Transformando momentos em memórias duradouras." 
@@ -844,7 +821,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
 );
 };
 
-const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void }> = ({ product, onClick }) => {
+const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void; isAdmin?: boolean }> = ({ product, onClick, isAdmin }) => {
   return (
     <motion.div 
       whileHover={{ y: -8, scale: 1.02 }}
@@ -883,48 +860,80 @@ const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void }>
         <p className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-1">{product.category}</p>
         <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors leading-tight tracking-tight">{product.name}</h3>
         <div className="flex items-center justify-between mt-auto">
-          <p className="text-xl font-black text-primary">R$ {product.price.toFixed(2).replace('.', ',')}</p>
-          <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold shadow-sm px-5">
-            ESCOLHER
-          </Button>
+          {isAdmin && (
+            <>
+              <p className="text-xl font-black text-primary">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+              <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold shadow-sm px-5">
+                ESCOLHER
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </motion.div>
   );
 }
 
-const Testimonials = () => (
+const Testimonials = ({ 
+  testimonials,
+  siteTexts,
+  isEditMode
+}: { 
+  testimonials: Testimonial[];
+  siteTexts: SiteText[];
+  isEditMode: boolean;
+}) => (
   <section className="py-24 px-6 lg:px-24">
     <div className="text-center mb-16">
-      <h2 className="font-heading text-5xl lg:text-6xl font-black mb-4 tracking-tighter">O que dizem nossos clientes</h2>
+      <EditableText 
+        id="testimonials_title" 
+        fallback="O que dizem nossos clientes" 
+        siteTexts={siteTexts} 
+        isEditMode={isEditMode} 
+        tag="h2" 
+        className="font-heading text-5xl lg:text-6xl font-black mb-4 tracking-tighter block" 
+      />
       <div className="flex justify-center gap-1">
         {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="w-5 h-5 fill-accent text-accent" />)}
       </div>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {TESTIMONIALS.map((t) => (
-        <Card key={t.id} className="border-none shadow-sm rounded-3xl p-8 bg-white hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-4 mb-6">
-            <img 
-              src={t.avatar} 
-              alt={t.name} 
-              className="w-12 h-12 rounded-full object-cover" 
-              referrerPolicy="no-referrer"
-            />
-            <div>
-              <p className="font-bold">{t.name}</p>
-              <div className="flex gap-0.5">
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} className="w-3 h-3 fill-accent text-accent" />
-                ))}
+    {testimonials.length === 0 ? (
+      <div className="text-center p-12 bg-white rounded-3xl shadow-sm border border-border">
+        <EditableText 
+          id="testimonials_empty" 
+          fallback="Ainda não há avaliações cadastradas. ✨" 
+          siteTexts={siteTexts} 
+          isEditMode={isEditMode} 
+          tag="p" 
+          className="text-lg text-muted-foreground italic block" 
+        />
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {testimonials.map((t) => (
+          <Card key={t.id} className="border-none shadow-sm rounded-3xl p-8 bg-white hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-4 mb-6">
+              <img 
+                src={t.avatar} 
+                alt={t.name} 
+                className="w-12 h-12 rounded-full object-cover" 
+                referrerPolicy="no-referrer"
+              />
+              <div>
+                <p className="font-bold">{t.name}</p>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} className="w-3 h-3 fill-accent text-accent" />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-          <p className="text-muted-foreground italic">"{t.text}"</p>
-        </Card>
-      ))}
-    </div>
+            <p className="text-muted-foreground italic">"{t.text}"</p>
+          </Card>
+        ))}
+      </div>
+    )}
   </section>
 );
 
@@ -934,7 +943,8 @@ const CollectionHighlights = ({
   currentCategory,
   onCategoryChange,
   siteTexts,
-  isEditMode
+  isEditMode,
+  isAdmin
 }: { 
   products: Product[];
   onProductClick: (p: Product) => void;
@@ -942,6 +952,7 @@ const CollectionHighlights = ({
   onCategoryChange: (category: string) => void;
   siteTexts: SiteText[];
   isEditMode: boolean;
+  isAdmin?: boolean;
 }) => {
   const categories = ['TODOS', 'ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
   
@@ -990,7 +1001,7 @@ const CollectionHighlights = ({
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
               >
-                <ProductCard product={product} onClick={onProductClick} />
+                <ProductCard product={product} onClick={onProductClick} isAdmin={isAdmin} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -1463,7 +1474,9 @@ const ProductDetailsModal = ({
             <div className="w-full md:w-1/2 p-8 lg:p-12 flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
               <Badge className="bg-secondary hover:bg-secondary text-white w-fit mb-4">{product.category}</Badge>
               <h2 className="font-heading text-4xl font-bold mb-4">{product.name}</h2>
-              <p className="text-3xl font-black text-primary mb-6">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+              {user?.isAdmin && (
+                <p className="text-3xl font-black text-primary mb-6">R$ {product.price.toFixed(2).replace('.', ',')}</p>
+              )}
               
               <p className="text-muted-foreground leading-relaxed mb-8 font-medium">
                 {product.description}
@@ -1471,28 +1484,30 @@ const ProductDetailsModal = ({
 
               <div className="space-y-8">
                 {/* Quantity */}
-                <div className="flex items-center gap-6">
-                  <span className="font-bold text-sm uppercase tracking-widest">Quantidade</span>
-                  <div className="flex items-center gap-4 bg-muted p-2 rounded-full">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="rounded-full w-8 h-8 bg-white hover:bg-primary hover:text-white"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="font-bold text-lg w-4 text-center">{quantity}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="rounded-full w-8 h-8 bg-white hover:bg-primary hover:text-white"
-                      onClick={() => setQuantity(quantity + 1)}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                {user?.isAdmin && (
+                  <div className="flex items-center gap-6">
+                    <span className="font-bold text-sm uppercase tracking-widest">Quantidade</span>
+                    <div className="flex items-center gap-4 bg-muted p-2 rounded-full">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full w-8 h-8 bg-white hover:bg-primary hover:text-white"
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <span className="font-bold text-lg w-4 text-center">{quantity}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full w-8 h-8 bg-white hover:bg-primary hover:text-white"
+                        onClick={() => setQuantity(quantity + 1)}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Print Selection */}
                 {product.prints && (
@@ -1561,57 +1576,55 @@ const ProductDetailsModal = ({
                 )}
 
                 {/* Shipping */}
-                <div className="space-y-4">
-                  <span className="font-bold text-sm uppercase tracking-widest block">Calcular Frete</span>
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="00000-000" 
-                      value={cep}
-                      onChange={(e) => setCep(e.target.value)}
-                      className="h-12 rounded-full border-2 border-muted focus-visible:ring-primary px-6"
-                    />
+                {user?.isAdmin && (
+                  <div className="space-y-4">
+                    <span className="font-bold text-sm uppercase tracking-widest block">Calcular Frete</span>
+                    <div className="flex gap-2">
+                      <Input 
+                        placeholder="00000-000" 
+                        value={cep}
+                        onChange={(e) => setCep(e.target.value)}
+                        className="h-12 rounded-full border-2 border-muted focus-visible:ring-primary px-6"
+                      />
+                      <Button 
+                        onClick={handleCalculateShipping}
+                        className="h-12 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-6"
+                      >
+                        {isCalculating ? '...' : 'OK'}
+                      </Button>
+                    </div>
+                    {shipping && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-green-50 p-4 rounded-2xl border border-green-100 flex items-center gap-4"
+                      >
+                        <Truck className="w-6 h-6 text-green-600" />
+                        <div>
+                          <p className="text-sm font-bold text-green-700">Entrega em {shipping.days} dias úteis</p>
+                          <p className="text-xs text-green-600">Valor: R$ {shipping.price.toFixed(2).replace('.', ',')}</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+                {user?.isAdmin && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button 
-                      onClick={handleCalculateShipping}
-                      className="h-12 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-6"
+                      variant="outline"
+                      onClick={() => onAddToCart(product, quantity, selectedPrint, selectedArt)}
+                      className="h-16 rounded-full border-2 border-primary text-primary hover:bg-primary/5 text-sm sm:text-base lg:text-lg font-bold px-4 whitespace-normal leading-tight"
                     >
-                      {isCalculating ? '...' : 'OK'}
+                      ADICIONAR AO CARRINHO
+                    </Button>
+                    <Button 
+                      onClick={() => onBuy(product, quantity, shipping, selectedPrint, selectedArt)}
+                      className="h-16 rounded-full bg-primary hover:bg-primary/90 text-white text-sm sm:text-base lg:text-lg font-bold shadow-lg shadow-primary/30 px-4 whitespace-normal leading-tight"
+                    >
+                      COMPRAR AGORA
                     </Button>
                   </div>
-                  {shipping && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-green-50 p-4 rounded-2xl border border-green-100 flex items-center gap-4"
-                    >
-                      <Truck className="w-6 h-6 text-green-600" />
-                      <div>
-                        <p className="text-sm font-bold text-green-700">Entrega em {shipping.days} dias úteis</p>
-                        <p className="text-xs text-green-600">Valor: R$ {shipping.price.toFixed(2).replace('.', ',')}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button 
-                    variant="outline"
-                    onClick={() => onAddToCart(product, quantity, selectedPrint, selectedArt)}
-                    className="h-16 rounded-full border-2 border-primary text-primary hover:bg-primary/5 text-sm sm:text-base lg:text-lg font-bold px-4 whitespace-normal leading-tight"
-                  >
-                    ADICIONAR AO CARRINHO
-                  </Button>
-                  <Button 
-                    onClick={() => onBuy(product, quantity, shipping, selectedPrint, selectedArt)}
-                    className="h-16 rounded-full bg-primary hover:bg-primary/90 text-white text-sm sm:text-base lg:text-lg font-bold shadow-lg shadow-primary/30 px-4 whitespace-normal leading-tight"
-                  >
-                    COMPRAR AGORA
-                  </Button>
-                </div>
-
-                {!user && (
-                  <p className="text-[10px] font-bold text-center text-muted-foreground uppercase tracking-widest">
-                    * Faça login para finalizar sua compra
-                  </p>
                 )}
 
                 {/* Trust Badges */}
@@ -2460,13 +2473,15 @@ export default function App() {
   const [activeView, setActiveView] = React.useState<'home' | 'studio' | 'admin'>('home');
   const [siteImages, setSiteImages] = React.useState<SiteImage[]>([]);
   const [siteTexts, setSiteTexts] = React.useState<SiteText[]>([]);
+  const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
   const [isVisualEditMode, setIsVisualEditMode] = React.useState(false);
-  const [adminTab, setAdminTab] = React.useState<'products'|'images'>('products');
+  const [adminTab, setAdminTab] = React.useState<'products'|'images'|'reviews'>('products');
 
   React.useEffect(() => {
     api.getProducts().then(setProducts).catch(console.error);
     api.getSiteImages().then(setSiteImages).catch(console.error);
     api.getSiteTexts().then(setSiteTexts).catch(console.error);
+    api.getTestimonials().then(setTestimonials).catch(console.error);
   }, []);
   const [approvedArts, setApprovedArts] = React.useState<string[]>(() => {
     const saved = localStorage.getItem('belle-mimo-arts');
@@ -2628,7 +2643,11 @@ export default function App() {
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
             />
-            <Testimonials />
+            <Testimonials 
+              testimonials={testimonials} 
+              siteTexts={siteTexts}
+              isEditMode={isVisualEditMode}
+            />
           </>
         ) : activeView === 'admin' && user?.isAdmin ? (
           <AdminDashboard 
@@ -2638,6 +2657,8 @@ export default function App() {
             onProductsUpdate={setProducts}
             siteImages={siteImages}
             onSiteImagesUpdate={setSiteImages}
+            testimonials={testimonials}
+            onTestimonialsUpdate={setTestimonials}
           />
         ) : (
           <ArtStudio 

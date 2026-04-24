@@ -34,6 +34,14 @@ export interface SiteText {
   text: string;
 }
 
+export interface Testimonial {
+  id: string;
+  name: string;
+  avatar: string;
+  text: string;
+  rating: number;
+}
+
 export const api = {
   getProducts: async (): Promise<Product[]> => {
     const { data, error } = await supabase.from('products').select('*');
@@ -88,5 +96,28 @@ export const api = {
     const { data, error } = await supabase.from('siteTexts').update({ text }).eq('id', id).select().single();
     if (error) throw error;
     return data;
+  },
+
+  getTestimonials: async (): Promise<Testimonial[]> => {
+    const { data, error } = await supabase.from('testimonials').select('*').order('rating', { ascending: false });
+    if (error) return [];
+    return data || [];
+  },
+
+  createTestimonial: async (testimonial: Omit<Testimonial, 'id'>): Promise<Testimonial> => {
+    const { data, error } = await supabase.from('testimonials').insert([testimonial]).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  updateTestimonial: async (id: string, testimonial: Partial<Testimonial>): Promise<Testimonial> => {
+    const { data, error } = await supabase.from('testimonials').update(testimonial).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  deleteTestimonial: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('testimonials').delete().eq('id', id);
+    if (error) throw error;
   }
 };
