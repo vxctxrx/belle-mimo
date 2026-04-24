@@ -1057,6 +1057,7 @@ const Testimonials = ({
       </div>
     )}
   </section>
+  );
 };
 
 const CollectionHighlights = ({ 
