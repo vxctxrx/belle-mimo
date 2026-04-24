@@ -251,6 +251,34 @@
       "category": "Estúdio",
       "description": "Exemplo de arte gerada pelo estúdio",
       "image": "https://picsum.photos/seed/art3/400/400"
+    },
+    {
+      "id": "about_img1",
+      "name": "Quem Somos 1",
+      "category": "Quem Somos",
+      "description": "Imagem 1 para a seção Quem Somos",
+      "image": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "about_img2",
+      "name": "Quem Somos 2",
+      "category": "Quem Somos",
+      "description": "Imagem 2 para a seção Quem Somos",
+      "image": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "about_img3",
+      "name": "Quem Somos 3",
+      "category": "Quem Somos",
+      "description": "Imagem 3 para a seção Quem Somos",
+      "image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      "id": "about_img4",
+      "name": "Quem Somos 4",
+      "category": "Quem Somos",
+      "description": "Imagem 4 para a seção Quem Somos",
+      "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80"
     }
   ],
   "siteTexts": [
@@ -301,6 +329,18 @@
     {
       "id": "footer_desc",
       "text": "Transformando momentos em memórias através de mimos personalizados e sustentáveis."
+    },
+    {
+      "id": "about_badge",
+      "text": "Conheça a Equipe"
+    },
+    {
+      "id": "about_title",
+      "text": "Quem Somos"
+    },
+    {
+      "id": "about_desc",
+      "text": "A Belle Mimo nasceu com um propósito simples: transformar suas memórias mais queridas em produtos físicos cheios de amor. Nossa paixão pela arte e pelo design nos guia para criar peças únicas, utilizando a tecnologia aliada a um cuidado artesanal que você pode sentir em cada detalhe."
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

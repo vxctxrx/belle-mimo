@@ -567,6 +567,75 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
 );
 };
 
+const AboutUs = ({ siteImages, siteTexts, isEditMode }: { siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean }) => {
+  const images = siteImages.filter(i => i.category === 'Quem Somos');
+  const img1 = images.find(i => i.id === 'about_img1')?.image || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80';
+  const img2 = images.find(i => i.id === 'about_img2')?.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=400&q=80';
+  const img3 = images.find(i => i.id === 'about_img3')?.image || 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=400&q=80';
+  const img4 = images.find(i => i.id === 'about_img4')?.image || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80';
+
+  return (
+  <section className="py-24 px-6 lg:px-12 bg-white relative overflow-hidden">
+    <div className="max-w-7xl mx-auto relative z-10">
+      <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
+        <div className="flex-1 space-y-8">
+          <Badge className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-bold">
+            <EditableText id="about_badge" fallback="Nossa História ✨" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+          </Badge>
+          <EditableText 
+            id="about_title" 
+            fallback="Quem <br /> <span class='text-secondary italic'>Somos</span>" 
+            siteTexts={siteTexts} 
+            isEditMode={isEditMode} 
+            tag="h2" 
+            className="text-5xl lg:text-7xl font-black tracking-tighter leading-none text-foreground" 
+          />
+          <EditableText 
+            id="about_desc" 
+            fallback="A Belle Mimo nasceu com um propósito simples: transformar suas memórias mais queridas em produtos físicos cheios de amor. Nossa paixão pela arte e pelo design nos guia para criar peças únicas, utilizando a tecnologia aliada a um cuidado artesanal que você pode sentir em cada detalhe." 
+            siteTexts={siteTexts} 
+            isEditMode={isEditMode} 
+            tag="p" 
+            className="text-xl text-muted-foreground max-w-xl font-medium leading-relaxed" 
+          />
+        </div>
+        <div className="flex-1 relative w-full">
+          <div className="grid grid-cols-2 gap-4 relative">
+            <motion.div 
+              whileHover={{ scale: 1.05, rotate: -2 }}
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+            >
+              <img src={img1} className="w-full h-full object-cover" />
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05, rotate: 2 }}
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8 relative"
+            >
+              <img src={img2} className="w-full h-full object-cover" />
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05, rotate: -2 }}
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8 relative"
+            >
+              <img src={img3} className="w-full h-full object-cover" />
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05, rotate: 2 }}
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+            >
+              <img src={img4} className="w-full h-full object-cover" />
+            </motion.div>
+          </div>
+          {/* Decorative Sparkles */}
+          <Sparkles className="absolute -top-8 -left-8 w-16 h-16 text-secondary animate-pulse" />
+          <Sparkles className="absolute -bottom-8 -right-8 w-12 h-12 text-primary animate-pulse delay-700" />
+        </div>
+      </div>
+    </div>
+  </section>
+  );
+};
+
 const Navbar = ({ 
   onUserClick, 
   onCartClick, 
@@ -2667,6 +2736,11 @@ export default function App() {
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
               isAdmin={user?.isAdmin}
+            />
+            <AboutUs 
+              siteImages={siteImages}
+              siteTexts={siteTexts}
+              isEditMode={isVisualEditMode}
             />
             <CollectionHighlights 
               products={products}
