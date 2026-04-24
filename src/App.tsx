@@ -980,12 +980,17 @@ const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void; i
 const Testimonials = ({ 
   testimonials,
   siteTexts,
-  isEditMode
+  isEditMode,
+  isAdmin
 }: { 
   testimonials: Testimonial[];
   siteTexts: SiteText[];
   isEditMode: boolean;
-}) => (
+  isAdmin?: boolean;
+}) => {
+  if (testimonials.length === 0 && !isAdmin) return null;
+
+  return (
   <section className="py-24 px-6 lg:px-24">
     <div className="text-center mb-16">
       <EditableText 
@@ -1043,7 +1048,7 @@ const Testimonials = ({
       </div>
     )}
   </section>
-);
+};
 
 const CollectionHighlights = ({ 
   products,
@@ -2849,6 +2854,7 @@ export default function App() {
               testimonials={testimonials} 
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
+              isAdmin={user?.isAdmin}
             />
           </>
         ) : activeView === 'admin' && user?.isAdmin ? (
