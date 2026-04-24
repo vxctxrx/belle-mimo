@@ -765,12 +765,12 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
 
     {/* Left Side: Hero Image Grid */}
     <div className="relative flex items-center justify-center">
-      <div className="relative w-full max-w-[500px] aspect-square grid grid-cols-2 gap-4">
+      <div className="relative w-full max-w-[650px] grid grid-cols-2 gap-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1 }}
-          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+          className="relative aspect-[4/3] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage1} alt="Coleção Belle Mimo 1" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -781,7 +781,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.1 }}
-          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white mt-8"
+          className="relative aspect-[4/3] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white mt-8"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage2} alt="Coleção Belle Mimo 2" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -792,7 +792,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white -mt-8"
+          className="relative aspect-[4/3] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white -mt-8"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage3} alt="Coleção Belle Mimo 3" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -803,7 +803,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+          className="relative aspect-[4/3] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage4} alt="Coleção Belle Mimo 4" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -816,7 +816,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           transition={{ duration: 3, repeat: Infinity }}
           className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12 z-10"
         >
-          <p className="font-heading font-bold text-accent-foreground text-center leading-tight">
+          <p className="font-serif italic font-bold tracking-widest text-accent-foreground text-center leading-tight">
             FEITO <br /> COM AMOR
           </p>
         </motion.div>
