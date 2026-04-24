@@ -579,9 +579,6 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode }: { siteImages: SiteImage[
     <div className="max-w-7xl mx-auto relative z-10">
       <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
         <div className="flex-1 space-y-8">
-          <Badge className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-bold">
-            <EditableText id="about_badge" fallback="Nossa História ✨" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-          </Badge>
           <EditableText 
             id="about_title" 
             fallback="Quem <br /> <span class='text-secondary italic'>Somos</span>" 
@@ -883,11 +880,16 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
         <motion.div 
           animate={{ rotate: [0, 5, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity }}
-          className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12 z-10"
+          className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12 z-10 flex items-center justify-center"
         >
-          <p className="font-sans font-black tracking-wider uppercase text-accent-foreground text-center leading-tight">
-            FEITO <br /> COM AMOR
-          </p>
+          <EditableText 
+            id="hero_badge" 
+            fallback="FEITO <br /> COM AMOR" 
+            siteTexts={siteTexts} 
+            isEditMode={isEditMode} 
+            tag="div" 
+            className="font-heading font-black tracking-wider uppercase text-accent-foreground text-center leading-tight" 
+          />
         </motion.div>
       </div>
     </div>
@@ -994,16 +996,21 @@ const Testimonials = ({
         tag="h2" 
         className="font-heading text-5xl lg:text-6xl font-black mb-4 tracking-tighter block" 
       />
-      <div className="flex justify-center gap-1">
-        {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="w-5 h-5 fill-accent text-accent" />)}
-      </div>
+      <EditableText 
+        id="testimonials_subtitle" 
+        fallback="Experiências reais de quem já se encantou com nossos mimos" 
+        siteTexts={siteTexts} 
+        isEditMode={isEditMode} 
+        tag="p" 
+        className="text-xl text-muted-foreground mt-4 font-medium" 
+      />
     </div>
 
     {testimonials.length === 0 ? (
-      <div className="text-center p-12 bg-white rounded-3xl shadow-sm border border-border">
+      <div className="text-center p-12 bg-white rounded-3xl shadow-sm border border-border max-w-md mx-auto">
         <EditableText 
           id="testimonials_empty" 
-          fallback="Ainda não há avaliações cadastradas. ✨" 
+          fallback="o que dizem nossos clientes" 
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="p" 
