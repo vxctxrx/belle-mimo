@@ -477,7 +477,7 @@ const ArtStudio = ({
   );
 };
 
-const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode }: { onGoToStudio: () => void, siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean }) => {
+const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAdmin }: { onGoToStudio: () => void, siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean, isAdmin?: boolean }) => {
   const images = siteImages.filter(i => i.category === 'Estúdio');
   const demo1 = images.find(i => i.id === 'studio_demo1')?.image || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
   const img1 = images.find(i => i.id === 'studio_demo2')?.image || 'https://picsum.photos/seed/art1/400/400';
@@ -516,38 +516,44 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode }: { 
               <span className="text-sm font-bold">Aprovação Instantânea</span>
             </div>
           </div>
-          <Button 
-            onClick={onGoToStudio}
-            className="h-16 rounded-full bg-primary hover:bg-primary/90 px-12 text-lg font-bold shadow-xl shadow-primary/20 group"
-          >
-            <EditableText id="btn_studio" fallback="EXPERIMENTAR O ESTÚDIO" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-          </Button>
+          {isAdmin && (
+            <Button 
+              onClick={onGoToStudio}
+              className="h-16 rounded-full bg-primary hover:bg-primary/90 px-12 text-lg font-bold shadow-xl shadow-primary/20 group"
+            >
+              <EditableText id="btn_studio" fallback="EXPERIMENTAR O ESTÚDIO" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </Button>
+          )}
         </div>
         <div className="flex-1 relative">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 relative">
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
             >
+              <Badge className="absolute top-4 left-4 z-10 bg-white/90 text-primary border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Antes</Badge>
               <img src={demo1} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8 relative"
             >
+              <Badge className="absolute top-4 left-4 z-10 bg-white/90 text-primary border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Antes</Badge>
               <img src={img1} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8 relative"
             >
+              <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Depois ✨</Badge>
               <img src={img2} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
             >
+              <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Depois ✨</Badge>
               <img src={img3} className="w-full h-full object-cover" />
             </motion.div>
           </div>
@@ -2631,14 +2637,13 @@ export default function App() {
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
             />
-            {user?.isAdmin && (
-              <StudioHighlight 
-                onGoToStudio={() => setActiveView('studio')} 
-                siteImages={siteImages}
-                siteTexts={siteTexts}
-                isEditMode={isVisualEditMode}
-              />
-            )}
+            <StudioHighlight 
+              onGoToStudio={() => setActiveView('studio')} 
+              siteImages={siteImages}
+              siteTexts={siteTexts}
+              isEditMode={isVisualEditMode}
+              isAdmin={user?.isAdmin}
+            />
             <CollectionHighlights 
               products={products}
               onProductClick={handleProductClick} 
