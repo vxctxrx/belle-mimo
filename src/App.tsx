@@ -737,7 +737,10 @@ const Navbar = ({
 };
 
 const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExploreClick: () => void, siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean }) => {
-  const bgImage = siteImages.find(img => img.id === 'hero_bg')?.image || "https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&w=800&q=80";
+  const bgImage1 = siteImages.find(img => img.id === 'hero_bg')?.image || "https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&w=800&q=80";
+  const bgImage2 = siteImages.find(img => img.id === 'hero_bg2')?.image || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80";
+  const bgImage3 = siteImages.find(img => img.id === 'hero_bg3')?.image || "https://images.unsplash.com/photo-1519947486511-46149fa0a254?auto=format&fit=crop&w=400&q=80";
+  const bgImage4 = siteImages.find(img => img.id === 'hero_bg4')?.image || "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=400&q=80";
 
   return (
   <section className="relative w-full min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden px-6 lg:px-12 py-12 gap-12">
@@ -760,34 +763,64 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
       />
     </div>
 
-    {/* Left Side: Hero Image */}
+    {/* Left Side: Hero Image Grid */}
     <div className="relative flex items-center justify-center">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
-        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-        transition={{ duration: 1 }}
-        className="relative w-full aspect-square max-w-[500px] bg-white p-4 rounded-[3rem] shadow-xl border-4 border-white"
-      >
-        <div className="w-full h-full rounded-[2.5rem] overflow-hidden relative">
-          <img 
-            src={bgImage} 
-            alt="Coleção Belle Mimo" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
-        </div>
+      <div className="relative w-full max-w-[500px] aspect-square grid grid-cols-2 gap-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1 }}
+          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+        >
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
+            <img src={bgImage1} alt="Coleção Belle Mimo 1" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          </div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1, delay: 0.1 }}
+          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white mt-8"
+        >
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
+            <img src={bgImage2} alt="Coleção Belle Mimo 2" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          </div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white -mt-8"
+        >
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
+            <img src={bgImage3} alt="Coleção Belle Mimo 3" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          </div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="relative bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+        >
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
+            <img src={bgImage4} alt="Coleção Belle Mimo 4" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          </div>
+        </motion.div>
+
         {/* Playful Badge */}
         <motion.div 
           animate={{ rotate: [0, 5, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity }}
-          className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12"
+          className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12 z-10"
         >
           <p className="font-heading font-bold text-accent-foreground text-center leading-tight">
             FEITO <br /> COM AMOR
           </p>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
 
     {/* Right Side: Content */}
@@ -813,16 +846,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           tag="p" 
           className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed font-medium" 
         />
-        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <Button 
-            size="lg" 
-            onClick={onExploreClick}
-            className="rounded-full px-12 py-8 text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/30 font-bold group"
-          >
-            <EditableText id="btn_explore" fallback="VER PRODUTOS" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-            <ArrowRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-2" />
-          </Button>
-        </div>
+        {/* Button removed as requested */}
       </motion.div>
     </div>
   </section>
