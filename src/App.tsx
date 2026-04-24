@@ -14,6 +14,7 @@ import {
   Instagram, 
   Facebook, 
   Twitter,
+  MessageCircle,
   Heart,
   ArrowRight,
   Plus,
@@ -994,7 +995,9 @@ const Testimonials = ({
   isEditMode: boolean;
   isAdmin?: boolean;
 }) => {
-  if (testimonials.length === 0 && !isAdmin) return null;
+  if (!isAdmin && (!testimonials || testimonials.length === 0)) {
+    return null;
+  }
 
   return (
   <section className="py-24 px-6 lg:px-24">
@@ -1173,16 +1176,31 @@ const Footer = ({
             tag="p" 
             className="text-gray-400 text-base leading-relaxed" 
           />
-          <div className="flex gap-4">
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 rounded-full w-12 h-12">
+          <div className="flex flex-col gap-3 mt-4">
+            <a 
+              href="https://wa.me/5511947652272" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl transition-all font-bold w-full max-w-[280px]"
+            >
+              <MessageCircle className="w-6 h-6" />
+              <div className="flex flex-col">
+                <span className="text-xs uppercase tracking-widest opacity-80">WhatsApp</span>
+                <span>(11) 94765-2272</span>
+              </div>
+            </a>
+            <a 
+              href="https://instagram.com/lojabellemimo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:opacity-90 text-white p-4 rounded-2xl transition-all font-bold w-full max-w-[280px]"
+            >
               <Instagram className="w-6 h-6" />
-            </Button>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 rounded-full w-12 h-12">
-              <Facebook className="w-6 h-6" />
-            </Button>
-            <Button variant="ghost" size="icon" className="hover:bg-white/10 rounded-full w-12 h-12">
-              <Twitter className="w-6 h-6" />
-            </Button>
+              <div className="flex flex-col">
+                <span className="text-xs uppercase tracking-widest opacity-80">Instagram</span>
+                <span>@lojabellemimo</span>
+              </div>
+            </a>
           </div>
         </div>
 

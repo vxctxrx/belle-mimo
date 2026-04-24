@@ -415,6 +415,13 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
                       <td className="p-5 px-8 align-middle">
                         <div className="font-bold mb-1">{data.name}</div>
                         <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">{data.description}</p>
+                        <div className="mt-2 text-[10px] font-bold text-primary bg-primary/10 inline-block px-2 py-1 rounded">
+                          Tamanho Recomendado: {
+                            data.id.startsWith('hero_bg') ? '1920x1080' : 
+                            data.category === 'Quem Somos' || data.category === 'Estúdio' ? '800x800 (Quadrada)' :
+                            'Automático'
+                          }
+                        </div>
                       </td>
                       <td className="p-5">
                         <div className="flex items-center gap-4">
