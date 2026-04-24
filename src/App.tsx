@@ -39,7 +39,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { api, Product, PrintOption, SiteImage, SiteText, Testimonial } from '@/lib/api';
+import { api, supabase, Product, PrintOption, SiteImage, SiteText, Testimonial } from '@/lib/api';
 import { AdminDashboard } from '@/components/AdminDashboard';
 
 interface CartItem extends Product {
@@ -1256,13 +1256,12 @@ const AuthModal = ({
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    const isAdminLogin = formData.email === 'adminalexandrebello' && formData.password === '7777Bello1980';
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
       newErrors.email = 'O e-mail é obrigatório';
-    } else if (!emailRegex.test(formData.email) && !isAdminLogin) {
+    } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Ops! Esse e-mail não parece válido 🧐';
     }
 
@@ -1287,28 +1286,80 @@ const AuthModal = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
       setIsSuccess(true);
-      let userData: UserData = {
-        name: formData.name || 'Usuário Belle Mimo',
-        email: formData.email,
-        cpf: formData.cpf || '000.000.000-00',
-        birthDate: formData.birthDate || '',
-        cep: formData.cep || '',
-        address: formData.address || ''
-      };
       
-      if (formData.email === 'adminalexandrebello' && formData.password === '7777Bello1980') {
-        userData = { ...userData, name: 'Alexandre Bello (Admin)', isAdmin: true };
-      }
-      
-      setTimeout(() => {
+      try {
+        if (isLogin) {
+          // Attempt admin login via Supabase
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password
+          });
+          
+          if (!error && data?.user) {
+            // Admin successfully logged in
+            onLogin({
+              name: data.user.user_metadata?.name || 'Administrador',
+              email: data.user.email!,
+              cpf: '000.000.000-00',
+              birthDate: '',
+              cep: '',
+              address: '',
+              isAdmin: true
+            });
+            setTimeout(() => {
+              setIsSuccess(false);
+              onClose();
+            }, 2000);
+            return;
+          }
+          
+          // Se falhou no Supabase, assumimos que pode ser um cliente comum
+          if (formData.email.toLowerCase().includes('admin')) {
+             setIsSuccess(false);
+             setErrors({ email: 'Credenciais incorretas.' });
+             return;
+          }
+
+          // Fake customer login
+          let userData: UserData = {
+            name: formData.name || 'Usuário Belle Mimo',
+            email: formData.email,
+            cpf: '000.000.000-00',
+            birthDate: '',
+            cep: '',
+            address: ''
+          };
+          setTimeout(() => {
+            setIsSuccess(false);
+            onLogin(userData);
+            onClose();
+          }, 2000);
+        } else {
+          // Fake customer signup
+          let userData: UserData = {
+            name: formData.name || 'Usuário Belle Mimo',
+            email: formData.email,
+            cpf: formData.cpf || '000.000.000-00',
+            birthDate: formData.birthDate || '',
+            cep: formData.cep || '',
+            address: formData.address || ''
+          };
+          
+          setTimeout(() => {
+            setIsSuccess(false);
+            onLogin(userData);
+            onClose();
+          }, 2000);
+        }
+      } catch (err) {
+        console.error(err);
         setIsSuccess(false);
-        onLogin(userData);
-        onClose();
-      }, 2000);
+        setErrors({ email: 'Erro de conexão.' });
+      }
     }
   };
 
@@ -2590,6 +2641,39 @@ export default function App() {
     api.getSiteImages().then(setSiteImages).catch(console.error);
     api.getSiteTexts().then(setSiteTexts).catch(console.error);
     api.getTestimonials().then(setTestimonials).catch(console.error);
+    
+    // Auth Session Listener
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          name: session.user.user_metadata?.name || 'Administrador',
+          email: session.user.email!,
+          cpf: '000.000.000-00',
+          birthDate: '',
+          cep: '',
+          address: '',
+          isAdmin: true
+        });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          name: session.user.user_metadata?.name || 'Administrador',
+          email: session.user.email!,
+          cpf: '000.000.000-00',
+          birthDate: '',
+          cep: '',
+          address: '',
+          isAdmin: true
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
   const [approvedArts, setApprovedArts] = React.useState<string[]>(() => {
     const saved = localStorage.getItem('belle-mimo-arts');
@@ -2706,7 +2790,10 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (user?.isAdmin) {
+      await supabase.auth.signOut();
+    }
     setUser(null);
     setIsCheckoutOpen(false);
   };
