@@ -790,11 +790,17 @@ const Navbar = ({
           )}
           <Button 
             variant="ghost" 
-            size="icon" 
-            className={`rounded-full hover:bg-primary/10 w-12 h-12 ${user ? 'text-primary' : ''}`}
+            className={`rounded-full hover:bg-primary/10 h-12 ${user ? 'px-4 border-2 border-primary/20 text-primary bg-primary/5' : 'w-12 px-0'}`}
             onClick={user ? onLogout : onUserClick}
           >
-            {user ? <LogOut className="w-6 h-6" /> : <User className="w-6 h-6" />}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <LogOut className="w-5 h-5" />
+                <span className="font-bold text-sm">SAIR</span>
+              </div>
+            ) : (
+              <User className="w-6 h-6" />
+            )}
           </Button>
         </div>
       </div>
