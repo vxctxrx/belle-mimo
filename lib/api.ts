@@ -93,7 +93,7 @@ export const api = {
   },
 
   updateSiteText: async (id: string, text: string): Promise<SiteText> => {
-    const { data, error } = await supabase.from('siteTexts').update({ text }).eq('id', id).select().single();
+    const { data, error } = await supabase.from('siteTexts').upsert({ id, text }).select().single();
     if (error) throw error;
     return data;
   },
