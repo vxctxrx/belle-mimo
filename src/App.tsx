@@ -1179,27 +1179,27 @@ const Footer = ({
           />
           <div className="flex flex-col gap-3 mt-4">
             <a 
-              href="https://wa.me/5511947652272" 
+              href="https://api.whatsapp.com/send?phone=5511947652272" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl transition-all font-bold w-full max-w-[280px]"
+              className="flex items-center justify-center lg:justify-start gap-4 bg-[#25D366] hover:bg-[#1da851] text-white p-5 rounded-2xl transition-all font-black w-full max-w-[320px] shadow-lg shadow-[#25D366]/30 hover:shadow-xl hover:shadow-[#25D366]/40 hover:-translate-y-1 active:scale-95 text-lg"
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-8 h-8" />
               <div className="flex flex-col">
-                <span className="text-xs uppercase tracking-widest opacity-80">WhatsApp</span>
-                <span>(11) 94765-2272</span>
+                <span className="text-xs uppercase tracking-[0.2em] opacity-90 font-bold">Fale conosco pelo</span>
+                <span className="text-xl">WhatsApp</span>
               </div>
             </a>
             <a 
               href="https://instagram.com/lojabellemimo" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:opacity-90 text-white p-4 rounded-2xl transition-all font-bold w-full max-w-[280px]"
+              className="flex items-center justify-center lg:justify-start gap-4 bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F56040] hover:opacity-90 text-white p-5 rounded-2xl transition-all font-black w-full max-w-[320px] shadow-lg shadow-[#FD1D1D]/30 hover:shadow-xl hover:shadow-[#FD1D1D]/40 hover:-translate-y-1 active:scale-95 text-lg"
             >
-              <Instagram className="w-6 h-6" />
+              <Instagram className="w-8 h-8" />
               <div className="flex flex-col">
-                <span className="text-xs uppercase tracking-widest opacity-80">Instagram</span>
-                <span>@lojabellemimo</span>
+                <span className="text-xs uppercase tracking-[0.2em] opacity-90 font-bold">Siga nosso</span>
+                <span className="text-xl">Instagram</span>
               </div>
             </a>
           </div>
