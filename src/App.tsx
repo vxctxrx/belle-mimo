@@ -644,9 +644,11 @@ const Navbar = ({
   user,
   onLogout,
   siteImages,
+  siteTexts,
   isVisualEditMode,
   setIsVisualEditMode,
-  onAdminTabChange
+  onAdminTabChange,
+  menuCategories
 }: { 
   onUserClick: () => void; 
   onCartClick: () => void; 
@@ -1079,7 +1081,8 @@ const CollectionHighlights = ({
   onCategoryChange,
   siteTexts,
   isEditMode,
-  isAdmin
+  isAdmin,
+  menuCategories
 }: { 
   products: Product[];
   onProductClick: (p: Product) => void;
@@ -1158,7 +1161,8 @@ const Footer = ({
   onContactClick,
   siteImages,
   siteTexts,
-  isEditMode
+  isEditMode,
+  menuCategories
 }: { 
   onCategoryClick: (cat: string) => void;
   onContactClick: () => void;
