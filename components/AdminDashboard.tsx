@@ -51,11 +51,13 @@ interface AdminDashboardProps {
   onSiteImagesUpdate: (images: SiteImage[]) => void;
   testimonials?: Testimonial[];
   onTestimonialsUpdate?: (testimonials: Testimonial[]) => void;
-  activeTab: 'products'|'images'|'reviews';
-  onTabChange?: (tab: 'products'|'images'|'reviews') => void;
+  siteTexts?: SiteText[];
+  onSiteTextsUpdate?: (texts: SiteText[]) => void;
+  activeTab: 'products'|'images'|'reviews'|'menus';
+  onTabChange?: (tab: 'products'|'images'|'reviews'|'menus') => void;
 }
 
-export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteImagesUpdate, testimonials = [], onTestimonialsUpdate, activeTab, onTabChange }: AdminDashboardProps) => {
+export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteImagesUpdate, testimonials = [], onTestimonialsUpdate, siteTexts = [], onSiteTextsUpdate, activeTab, onTabChange }: AdminDashboardProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   
   // States for products
@@ -68,6 +70,10 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
   // States for testimonials
   const [currentReviewEdit, setCurrentReviewEdit] = useState<Partial<Testimonial> | null>(null);
 
+  // States for menus
+  const [currentMenuEdit, setCurrentMenuEdit] = useState<string>('');
+  const [editingMenuIndex, setEditingMenuIndex] = useState<number | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
@@ -78,6 +84,8 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
     setCurrentEdit(null);
     setCurrentImageEdit(null);
     setCurrentReviewEdit(null);
+    setCurrentMenuEdit('');
+    setEditingMenuIndex(null);
   }, [activeTab]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,12 +217,59 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
     }
   };
 
+  const menuCategoriesString = siteTexts.find(t => t.id === 'menu_categories_list')?.text;
+  let menus = ['ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
+  if (menuCategoriesString) {
+    try { menus = JSON.parse(menuCategoriesString); } catch(e) {}
+  }
+
+  const handleAddNewMenu = () => {
+    setIsAddingNew(true);
+    setEditingMenuIndex(null);
+    setCurrentMenuEdit('');
+  };
+
+  const handleSaveMenu = async (index?: number) => {
+    setIsLoading(true);
+    try {
+      let newMenus = [...menus];
+      if (index !== undefined) {
+        newMenus[index] = currentMenuEdit.toUpperCase();
+      } else {
+        if (currentMenuEdit.trim()) newMenus.push(currentMenuEdit.trim().toUpperCase());
+      }
+      await api.updateSiteText('menu_categories_list', JSON.stringify(newMenus));
+      const updated = await api.getSiteTexts();
+      if (onSiteTextsUpdate) onSiteTextsUpdate(updated);
+      setEditingMenuIndex(null);
+      setIsAddingNew(false);
+      setCurrentMenuEdit('');
+    } catch(e) { alert('Erro ao salvar menu.'); }
+    setIsLoading(false);
+  };
+
+  const handleDeleteMenu = async (index: number) => {
+    if (confirm('Deseja excluir este menu?')) {
+      setIsLoading(true);
+      try {
+        let newMenus = [...menus];
+        newMenus.splice(index, 1);
+        await api.updateSiteText('menu_categories_list', JSON.stringify(newMenus));
+        const updated = await api.getSiteTexts();
+        if (onSiteTextsUpdate) onSiteTextsUpdate(updated);
+      } catch(e) { alert('Erro ao excluir menu.'); }
+      setIsLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setEditingId(null);
     setIsAddingNew(false);
     setCurrentEdit(null);
     setCurrentImageEdit(null);
     setCurrentReviewEdit(null);
+    setCurrentMenuEdit('');
+    setEditingMenuIndex(null);
   };
 
   return (
@@ -227,13 +282,18 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
           </div>
           <div className="flex gap-4">
             {activeTab === 'products' && (
-              <Button onClick={handleAddNewProduct} disabled={isAddingNew || editingId !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
+              <Button onClick={handleAddNewProduct} disabled={isAddingNew || editingId !== null || editingMenuIndex !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
                 <Plus className="w-5 h-5 mr-2" /> NOVO PRODUTO
               </Button>
             )}
             {activeTab === 'reviews' && (
-              <Button onClick={handleAddNewReview} disabled={isAddingNew || editingId !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
+              <Button onClick={handleAddNewReview} disabled={isAddingNew || editingId !== null || editingMenuIndex !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
                 <Plus className="w-5 h-5 mr-2" /> NOVA AVALIAÇÃO
+              </Button>
+            )}
+            {activeTab === 'menus' && (
+              <Button onClick={handleAddNewMenu} disabled={isAddingNew || editingId !== null || editingMenuIndex !== null} className="rounded-full bg-primary font-bold shadow-lg h-12 px-6">
+                <Plus className="w-5 h-5 mr-2" /> NOVO MENU
               </Button>
             )}
           </div>
@@ -572,6 +632,77 @@ export const AdminDashboard = ({ products, onProductsUpdate, siteImages, onSiteI
                           <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity" style={{ opacity: 1 }}>
                             <Button size="icon" variant="ghost" className="hover:text-primary hover:bg-primary/10 rounded-xl" onClick={() => handleEditReview(review)} disabled={isAddingNew || editingId !== null}><Pencil className="w-4 h-4"/></Button>
                             <Button size="icon" variant="ghost" className="hover:text-destructive hover:bg-destructive/10 rounded-xl" onClick={() => handleDeleteReview(review.id)} disabled={isAddingNew || editingId !== null}><Trash2 className="w-4 h-4"/></Button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        )}
+
+        {/* --- Tabela de Menus --- */}
+        {activeTab === 'menus' && (
+        <div className="bg-white rounded-3xl shadow-xl border-4 border-white overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="overflow-x-auto hide-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-muted/50 text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
+                  <th className="p-5 px-8">Identificador (Categoria)</th>
+                  <th className="p-5">Nome de Exibição</th>
+                  <th className="p-5 text-right px-8">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isAddingNew && editingMenuIndex === null && (
+                  <tr className="bg-primary/5 border-b border-primary/10 transition-colors align-top">
+                    <td className="p-5 px-8 align-middle text-muted-foreground text-xs italic">
+                      Automático
+                    </td>
+                    <td className="p-5 align-middle">
+                      <Input value={currentMenuEdit} onChange={e => setCurrentMenuEdit(e.target.value)} placeholder="EX: NOVO MENU" className="h-8 font-bold bg-white uppercase" />
+                    </td>
+                    <td className="p-5 px-8 align-middle text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button size="icon" variant="ghost" onClick={handleCancel} disabled={isLoading} className="hover:bg-red-50 hover:text-red-500 rounded-xl"><X className="w-5 h-5"/></Button>
+                        <Button size="icon" className="bg-primary text-primary-foreground shadow flex-shrink-0 rounded-xl" onClick={() => handleSaveMenu()} disabled={isLoading}><Check className="w-5 h-5"/></Button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+
+                {menus.map((menu, idx) => {
+                  const isEdit = editingMenuIndex === idx;
+
+                  return (
+                    <tr key={idx} className={`border-b border-muted transition-colors align-top ${isEdit ? 'bg-primary/5' : 'hover:bg-muted/30'}`}>
+                      <td className="p-5 px-8 align-middle">
+                        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-black bg-muted px-3 py-1 rounded-full">{menu}</span>
+                        <p className="text-[10px] text-muted-foreground mt-1">Este ID vincula-se aos produtos.</p>
+                      </td>
+                      <td className="p-5 align-middle">
+                        {isEdit ? (
+                          <Input value={currentMenuEdit} onChange={e => setCurrentMenuEdit(e.target.value)} placeholder="NOME" className="h-8 font-bold bg-white uppercase" />
+                        ) : (
+                          <div className="font-bold">{menu}</div>
+                        )}
+                        {!isEdit && (
+                          <p className="text-[10px] text-muted-foreground mt-1 text-primary">Dica: Edite o texto exato através do botão "TEXTOS ON ✨" no site.</p>
+                        )}
+                      </td>
+                      <td className="p-5 px-8 align-middle text-right group">
+                        {isEdit ? (
+                          <div className="flex justify-end gap-2">
+                            <Button size="icon" variant="ghost" onClick={handleCancel} disabled={isLoading} className="hover:bg-red-50 hover:text-red-500 rounded-xl"><X className="w-5 h-5"/></Button>
+                            <Button size="icon" className="bg-primary text-primary-foreground shadow rounded-xl" onClick={() => handleSaveMenu(idx)} disabled={isLoading}><Check className="w-5 h-5"/></Button>
+                          </div>
+                        ) : (
+                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity" style={{ opacity: 1 }}>
+                            <Button size="icon" variant="ghost" className="hover:text-primary hover:bg-primary/10 rounded-xl" onClick={() => { setEditingMenuIndex(idx); setCurrentMenuEdit(menu); setIsAddingNew(false); }} disabled={isAddingNew || editingId !== null || editingMenuIndex !== null}><Pencil className="w-4 h-4"/></Button>
+                            <Button size="icon" variant="ghost" className="hover:text-destructive hover:bg-destructive/10 rounded-xl" onClick={() => handleDeleteMenu(idx)} disabled={isAddingNew || editingId !== null || editingMenuIndex !== null}><Trash2 className="w-4 h-4"/></Button>
                           </div>
                         )}
                       </td>

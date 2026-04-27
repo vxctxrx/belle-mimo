@@ -657,9 +657,11 @@ const Navbar = ({
   user: UserData | null;
   onLogout: () => void;
   siteImages: SiteImage[];
+  siteTexts: SiteText[];
   isVisualEditMode: boolean;
   setIsVisualEditMode: (val: boolean) => void;
-  onAdminTabChange: (tab: 'products'|'images'|'reviews') => void;
+  onAdminTabChange: (tab: 'products'|'images'|'reviews'|'menus') => void;
+  menuCategories: string[];
 }) => {
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
@@ -675,17 +677,17 @@ const Navbar = ({
           onClick={() => onViewChange('home')}
           className={`transition-all hover:scale-110 active:scale-95 uppercase ${activeView === 'home' ? 'text-primary' : 'hover:text-secondary'}`}
         >
-          HOME
+          <EditableText id="menu_home" fallback="HOME" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" />
         </button>
         {user?.isAdmin && (
           <button 
             onClick={() => onViewChange('studio')}
             className={`transition-all hover:scale-110 active:scale-95 uppercase flex items-center gap-2 ${activeView === 'studio' ? 'text-primary' : 'hover:text-secondary'}`}
           >
-            ESTÚDIO <Sparkles className="w-4 h-4" />
+            <EditableText id="menu_studio" fallback="ESTÚDIO" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" /> <Sparkles className="w-4 h-4" />
           </button>
         )}
-        {['ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'].map((item) => (
+        {menuCategories.map((item) => (
           <button 
             key={item} 
             onClick={() => {
@@ -694,7 +696,7 @@ const Navbar = ({
             }}
             className="hover:text-secondary transition-all hover:scale-110 active:scale-95 uppercase"
           >
-            {item}
+            <EditableText id={`menu_cat_${item.toLowerCase()}`} fallback={item} siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" />
           </button>
         ))}
         {user?.isAdmin && (
@@ -735,6 +737,16 @@ const Navbar = ({
               className="rounded-full px-6 py-2 font-bold border-2 bg-transparent border-primary/20 text-primary hover:bg-primary/5"
             >
               EDITAR AVALIAÇÕES
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                onViewChange('admin');
+                onAdminTabChange('menus');
+              }}
+              className="rounded-full px-6 py-2 font-bold border-2 bg-transparent border-primary/20 text-primary hover:bg-primary/5"
+            >
+              EDITAR MENUS
             </Button>
           </div>
         )}
@@ -1076,8 +1088,9 @@ const CollectionHighlights = ({
   siteTexts: SiteText[];
   isEditMode: boolean;
   isAdmin?: boolean;
+  menuCategories: string[];
 }) => {
-  const categories = ['TODOS', 'ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
+  const categories = ['TODOS', ...menuCategories];
   
   const filteredProducts = currentCategory === 'TODOS' 
     ? products 
@@ -1152,6 +1165,7 @@ const Footer = ({
   siteImages: SiteImage[];
   siteTexts: SiteText[];
   isEditMode: boolean;
+  menuCategories: string[];
 }) => {
   const [email, setEmail] = React.useState('');
   const [isSubscribed, setIsSubscribed] = React.useState(false);
@@ -1206,15 +1220,17 @@ const Footer = ({
         </div>
 
         <div>
-          <h4 className="font-black mb-8 uppercase tracking-[0.2em] text-[10px] text-gray-500">Categorias</h4>
+          <h4 className="font-black mb-8 uppercase tracking-[0.2em] text-[10px] text-gray-500">
+            <EditableText id="footer_cat_title" fallback="Categorias" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+          </h4>
           <ul className="flex flex-col gap-5 text-base text-gray-400 font-medium">
-            {['Ecobags', 'Almofadas', 'Aventais', 'Necessaires'].map(cat => (
+            {menuCategories.map(cat => (
               <li key={cat}>
                 <button 
                   onClick={() => onCategoryClick(cat.toUpperCase())}
                   className="hover:text-secondary transition-colors"
                 >
-                  {cat}
+                  <EditableText id={`menu_cat_${cat.toLowerCase()}`} fallback={cat} siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
                 </button>
               </li>
             ))}
@@ -1222,11 +1238,13 @@ const Footer = ({
         </div>
 
         <div>
-          <h4 className="font-black mb-8 uppercase tracking-[0.2em] text-[10px] text-gray-500">Ajuda</h4>
+          <h4 className="font-black mb-8 uppercase tracking-[0.2em] text-[10px] text-gray-500">
+            <EditableText id="footer_help_title" fallback="Ajuda" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+          </h4>
           <ul className="flex flex-col gap-5 text-base text-gray-400 font-medium">
-            <li><button onClick={onContactClick} className="hover:text-secondary transition-colors">Contato</button></li>
-            <li><button className="hover:text-secondary transition-colors">Termos de Uso</button></li>
-            <li><button className="hover:text-secondary transition-colors">Política de Privacidade</button></li>
+            <li><button onClick={onContactClick} className="hover:text-secondary transition-colors"><EditableText id="footer_help_contact" fallback="Contato" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" /></button></li>
+            <li><button className="hover:text-secondary transition-colors"><EditableText id="footer_help_terms" fallback="Termos de Uso" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" /></button></li>
+            <li><button className="hover:text-secondary transition-colors"><EditableText id="footer_help_privacy" fallback="Política de Privacidade" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" /></button></li>
           </ul>
         </div>
 
@@ -2664,7 +2682,15 @@ export default function App() {
   const [siteTexts, setSiteTexts] = React.useState<SiteText[]>([]);
   const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
   const [isVisualEditMode, setIsVisualEditMode] = React.useState(false);
-  const [adminTab, setAdminTab] = React.useState<'products'|'images'|'reviews'>('products');
+  const [adminTab, setAdminTab] = React.useState<'products'|'images'|'reviews'|'menus'>('products');
+
+  const menuCategoriesString = siteTexts.find(t => t.id === 'menu_categories_list')?.text;
+  let menuCategories = ['ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
+  if (menuCategoriesString) {
+    try {
+      menuCategories = JSON.parse(menuCategoriesString);
+    } catch(e) {}
+  }
 
   React.useEffect(() => {
     api.getProducts().then(setProducts).catch(console.error);
@@ -2841,9 +2867,11 @@ export default function App() {
         user={user}
         onLogout={handleLogout}
         siteImages={siteImages}
+        siteTexts={siteTexts}
         isVisualEditMode={isVisualEditMode}
         setIsVisualEditMode={setIsVisualEditMode}
         onAdminTabChange={setAdminTab}
+        menuCategories={menuCategories}
       />
       <main className="flex-grow">
         {activeView === 'home' ? (
@@ -2874,6 +2902,7 @@ export default function App() {
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
               isAdmin={user?.isAdmin}
+              menuCategories={menuCategories}
             />
             <Testimonials 
               testimonials={testimonials} 
@@ -2892,6 +2921,8 @@ export default function App() {
             onSiteImagesUpdate={setSiteImages}
             testimonials={testimonials}
             onTestimonialsUpdate={setTestimonials}
+            siteTexts={siteTexts}
+            onSiteTextsUpdate={setSiteTexts}
           />
         ) : (
           <ArtStudio 
@@ -2908,6 +2939,7 @@ export default function App() {
         siteImages={siteImages}
         siteTexts={siteTexts}
         isEditMode={isVisualEditMode}
+        menuCategories={menuCategories}
       />
       <AuthModal 
         isOpen={isAuthModalOpen} 
