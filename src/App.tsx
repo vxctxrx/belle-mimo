@@ -984,13 +984,11 @@ const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void; i
         <p className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-1">{product.category}</p>
         <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors leading-tight tracking-tight">{product.name}</h3>
         <div className="flex items-center justify-between mt-auto">
+          <p className="text-xl font-black text-primary">R$ {product.price.toFixed(2).replace('.', ',')}</p>
           {isAdmin && (
-            <>
-              <p className="text-xl font-black text-primary">R$ {product.price.toFixed(2).replace('.', ',')}</p>
-              <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold shadow-sm px-5">
-                ESCOLHER
-              </Button>
-            </>
+            <Button size="sm" className="rounded-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold shadow-sm px-5">
+              ESCOLHER
+            </Button>
           )}
         </div>
       </div>
@@ -1685,13 +1683,23 @@ const ProductDetailsModal = ({
             <div className="w-full md:w-1/2 p-8 lg:p-12 flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
               <Badge className="bg-secondary hover:bg-secondary text-white w-fit mb-4">{product.category}</Badge>
               <h2 className="font-heading text-4xl font-bold mb-4">{product.name}</h2>
-              {user?.isAdmin && (
-                <p className="text-3xl font-black text-primary mb-6">R$ {product.price.toFixed(2).replace('.', ',')}</p>
-              )}
+              <p className="text-3xl font-black text-primary mb-6">R$ {product.price.toFixed(2).replace('.', ',')}</p>
               
               <p className="text-muted-foreground leading-relaxed mb-8 font-medium">
                 {product.description}
               </p>
+
+              {!user?.isAdmin && (
+                <a 
+                  href={`https://api.whatsapp.com/send?phone=5511947652272&text=Ol%C3%A1%2C%20tenho%20interesse%20no%20produto%3A%20${encodeURIComponent(product.name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-16 rounded-full bg-[#25D366] hover:bg-[#128C7E] text-white text-lg font-bold shadow-lg shadow-[#25D366]/30 mb-8 flex items-center justify-center gap-2 transition-colors"
+                >
+                  <MessageCircle className="w-6 h-6" />
+                  ENTRE EM CONTATO
+                </a>
+              )}
 
               <div className="space-y-8">
                 {/* Quantity */}
@@ -2687,6 +2695,7 @@ export default function App() {
   const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
   const [isVisualEditMode, setIsVisualEditMode] = React.useState(false);
   const [adminTab, setAdminTab] = React.useState<'products'|'images'|'reviews'|'menus'>('products');
+  const [isLoadingData, setIsLoadingData] = React.useState(true);
 
   const menuCategoriesString = siteTexts.find(t => t.id === 'menu_categories_list')?.text;
   let menuCategories = ['ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
@@ -2697,10 +2706,12 @@ export default function App() {
   }
 
   React.useEffect(() => {
-    api.getProducts().then(setProducts).catch(console.error);
-    api.getSiteImages().then(setSiteImages).catch(console.error);
-    api.getSiteTexts().then(setSiteTexts).catch(console.error);
-    api.getTestimonials().then(setTestimonials).catch(console.error);
+    Promise.all([
+      api.getProducts().then(setProducts),
+      api.getSiteImages().then(setSiteImages),
+      api.getSiteTexts().then(setSiteTexts),
+      api.getTestimonials().then(setTestimonials)
+    ]).catch(console.error).finally(() => setIsLoadingData(false));
     
     // Auth Session Listener
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -2857,6 +2868,15 @@ export default function App() {
     setUser(null);
     setIsCheckoutOpen(false);
   };
+
+  if (isLoadingData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background flex-col gap-4">
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <p className="text-primary font-bold animate-pulse">Carregando Belle Mimo...</p>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
