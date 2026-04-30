@@ -1083,9 +1083,7 @@ const CollectionHighlights = ({
     <section id="products" className="py-24 px-6 lg:px-12 scroll-mt-24 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 border-secondary text-secondary px-6 py-1 rounded-full font-bold uppercase tracking-widest">
-            <EditableText id="col_badge" fallback="Nossas Coleções" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-          </Badge>
+          {/* Badge removed */}
           <EditableText id="col_title" fallback="Escolha seu <span className='text-secondary'>Mimo</span>" siteTexts={siteTexts} isEditMode={isEditMode} tag="h2" className="font-heading text-5xl lg:text-7xl font-black mb-8 tracking-tighter" />
           
           {/* Tabs Interface */}
