@@ -486,10 +486,10 @@ const ArtStudio = ({
 
 const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAdmin }: { onGoToStudio: () => void, siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean, isAdmin?: boolean }) => {
   const images = siteImages.filter(i => i.category === 'Estúdio');
-  const demo1 = images.find(i => i.id === 'studio_demo1')?.image || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
-  const img1 = images.find(i => i.id === 'studio_demo2')?.image || 'https://picsum.photos/seed/art1/400/400';
-  const img2 = images.find(i => i.id === 'studio_demo3')?.image || 'https://picsum.photos/seed/art2/400/400';
-  const img3 = images.find(i => i.id === 'studio_demo4')?.image || 'https://picsum.photos/seed/art3/400/400';
+  const demo1 = images.find(i => i.id === 'studio_demo1')?.image;
+  const img1 = images.find(i => i.id === 'studio_demo2')?.image;
+  const img2 = images.find(i => i.id === 'studio_demo3')?.image;
+  const img3 = images.find(i => i.id === 'studio_demo4')?.image;
 
   return (
   <section className="py-24 px-6 lg:px-12 bg-accent/5 relative overflow-hidden">
@@ -537,31 +537,31 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
           <div className="grid grid-cols-2 gap-4 relative">
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative bg-muted/30 flex items-center justify-center"
             >
               <Badge className="absolute top-4 left-4 z-10 bg-white/90 text-primary border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Antes</Badge>
-              <img src={demo1} className="w-full h-full object-cover" />
+              {demo1 ? <img src={demo1} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8 relative bg-muted/30 flex items-center justify-center"
             >
               <Badge className="absolute top-4 left-4 z-10 bg-white/90 text-primary border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Antes</Badge>
-              <img src={img1} className="w-full h-full object-cover" />
+              {img1 ? <img src={img1} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8 relative bg-muted/30 flex items-center justify-center"
             >
               <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Depois ✨</Badge>
-              <img src={img2} className="w-full h-full object-cover" />
+              {img2 ? <img src={img2} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative bg-muted/30 flex items-center justify-center"
             >
               <Badge className="absolute top-4 left-4 z-10 bg-accent text-accent-foreground border-none shadow-md backdrop-blur-sm px-3 py-1 font-black text-xs tracking-widest uppercase">Depois ✨</Badge>
-              <img src={img3} className="w-full h-full object-cover" />
+              {img3 ? <img src={img3} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
           </div>
           {/* Decorative Sparkles */}
@@ -576,10 +576,10 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
 
 const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean, onExploreClick: () => void }) => {
   const images = siteImages.filter(i => i.category === 'Quem Somos');
-  const img1 = images.find(i => i.id === 'about_img1')?.image || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80';
-  const img2 = images.find(i => i.id === 'about_img2')?.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=400&q=80';
-  const img3 = images.find(i => i.id === 'about_img3')?.image || 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=400&q=80';
-  const img4 = images.find(i => i.id === 'about_img4')?.image || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80';
+  const img1 = images.find(i => i.id === 'about_img1')?.image;
+  const img2 = images.find(i => i.id === 'about_img2')?.image;
+  const img3 = images.find(i => i.id === 'about_img3')?.image;
+  const img4 = images.find(i => i.id === 'about_img4')?.image;
 
   return (
   <section className="py-24 px-6 lg:px-12 bg-gradient-to-t from-background to-muted/50 relative overflow-hidden">
@@ -608,27 +608,27 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
           <div className="grid grid-cols-2 gap-6 relative">
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative bg-muted/30 flex items-center justify-center"
             >
-              <img src={img1} className="w-full h-full object-cover" />
+              {img1 ? <img src={img1} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-secondary/20 border-4 border-white mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-secondary/20 border-4 border-white mt-8 relative bg-muted/30 flex items-center justify-center"
             >
-              <img src={img2} className="w-full h-full object-cover" />
+              {img2 ? <img src={img2} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-accent/30 border-4 border-white -mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-accent/30 border-4 border-white -mt-8 relative bg-muted/30 flex items-center justify-center"
             >
-              <img src={img3} className="w-full h-full object-cover" />
+              {img3 ? <img src={img3} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative bg-muted/30 flex items-center justify-center"
             >
-              <img src={img4} className="w-full h-full object-cover" />
+              {img4 ? <img src={img4} className="w-full h-full object-cover" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
             </motion.div>
           </div>
           {/* Decorative Sparkles */}
@@ -831,10 +831,10 @@ const Navbar = ({
 };
 
 const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExploreClick: () => void, siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean }) => {
-  const bgImage1 = siteImages.find(img => img.id === 'hero_bg')?.image || "https://images.unsplash.com/photo-1459749411177-042180ce673c?auto=format&fit=crop&w=800&q=80";
-  const bgImage2 = siteImages.find(img => img.id === 'hero_bg2')?.image || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80";
-  const bgImage3 = siteImages.find(img => img.id === 'hero_bg3')?.image || "https://images.unsplash.com/photo-1519947486511-46149fa0a254?auto=format&fit=crop&w=400&q=80";
-  const bgImage4 = siteImages.find(img => img.id === 'hero_bg4')?.image || "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=400&q=80";
+  const bgImage1 = siteImages.find(img => img.id === 'hero_bg')?.image;
+  const bgImage2 = siteImages.find(img => img.id === 'hero_bg2')?.image;
+  const bgImage3 = siteImages.find(img => img.id === 'hero_bg3')?.image;
+  const bgImage4 = siteImages.find(img => img.id === 'hero_bg4')?.image;
 
   return (
   <section className="relative w-full min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden px-6 lg:px-12 py-12 gap-12 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
@@ -872,8 +872,8 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           transition={{ duration: 1 }}
           className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-primary/30 border-4 border-white/80"
         >
-          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
-            <img src={bgImage1} alt="Coleção Belle Mimo 1" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative bg-muted/30 flex items-center justify-center">
+            {bgImage1 ? <img src={bgImage1} alt="Coleção Belle Mimo 1" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
           </div>
         </motion.div>
         
@@ -883,8 +883,8 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           transition={{ duration: 1, delay: 0.1 }}
           className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-secondary/30 border-4 border-white/80 mt-8"
         >
-          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
-            <img src={bgImage2} alt="Coleção Belle Mimo 2" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative bg-muted/30 flex items-center justify-center">
+            {bgImage2 ? <img src={bgImage2} alt="Coleção Belle Mimo 2" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
           </div>
         </motion.div>
         
@@ -894,8 +894,8 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           transition={{ duration: 1, delay: 0.2 }}
           className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-accent/40 border-4 border-white/80 -mt-8"
         >
-          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
-            <img src={bgImage3} alt="Coleção Belle Mimo 3" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative bg-muted/30 flex items-center justify-center">
+            {bgImage3 ? <img src={bgImage3} alt="Coleção Belle Mimo 3" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
           </div>
         </motion.div>
         
@@ -905,8 +905,8 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           transition={{ duration: 1, delay: 0.3 }}
           className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-primary/30 border-4 border-white/80"
         >
-          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
-            <img src={bgImage4} alt="Coleção Belle Mimo 4" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative bg-muted/30 flex items-center justify-center">
+            {bgImage4 ? <img src={bgImage4} alt="Coleção Belle Mimo 4" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon className="w-12 h-12 text-muted-foreground/20" />}
           </div>
         </motion.div>
 
