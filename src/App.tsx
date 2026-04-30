@@ -44,7 +44,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { api, supabase, Product, PrintOption, SiteImage, SiteText, Testimonial } from '@/lib/api';
-import { AdminDashboard } from '@/components/AdminDashboard';
+const AdminDashboard = React.lazy(() => import('@/components/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 
 interface CartItem extends Product {
   quantity: number;
@@ -2713,7 +2713,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 }
 
 export default function App() {
-  const [products, setProducts] = React.useState<Product[]>([]);
+  const [products, setProducts] = React.useState<Product[]>(() => {
+    try { const cached = localStorage.getItem('bm_products'); return cached ? JSON.parse(cached) : []; } catch { return []; }
+  });
   const [user, setUser] = React.useState<UserData | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const [isLoginRequiredOpen, setIsLoginRequiredOpen] = React.useState(false);
@@ -2724,12 +2726,20 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = React.useState(false);
   const [currentCategory, setCurrentCategory] = React.useState('TODOS');
   const [activeView, setActiveView] = React.useState<'home' | 'studio' | 'admin'>('home');
-  const [siteImages, setSiteImages] = React.useState<SiteImage[]>([]);
-  const [siteTexts, setSiteTexts] = React.useState<SiteText[]>([]);
-  const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
+  const [siteImages, setSiteImages] = React.useState<SiteImage[]>(() => {
+    try { const cached = localStorage.getItem('bm_images'); return cached ? JSON.parse(cached) : []; } catch { return []; }
+  });
+  const [siteTexts, setSiteTexts] = React.useState<SiteText[]>(() => {
+    try { const cached = localStorage.getItem('bm_texts'); return cached ? JSON.parse(cached) : []; } catch { return []; }
+  });
+  const [testimonials, setTestimonials] = React.useState<Testimonial[]>(() => {
+    try { const cached = localStorage.getItem('bm_testimonials'); return cached ? JSON.parse(cached) : []; } catch { return []; }
+  });
   const [isVisualEditMode, setIsVisualEditMode] = React.useState(false);
   const [adminTab, setAdminTab] = React.useState<'products'|'images'|'reviews'|'menus'>('products');
-  const [isLoadingData, setIsLoadingData] = React.useState(true);
+  const [isLoadingData, setIsLoadingData] = React.useState(() => {
+    return !localStorage.getItem('bm_texts');
+  });
 
   const menuCategoriesString = siteTexts.find(t => t.id === 'menu_categories_list')?.text;
   let menuCategories = ['ECOBAGS', 'ALMOFADAS', 'AVENTAIS', 'NECESSAIRES'];
@@ -2741,10 +2751,22 @@ export default function App() {
 
   React.useEffect(() => {
     Promise.all([
-      api.getProducts().then(setProducts),
-      api.getSiteImages().then(setSiteImages),
-      api.getSiteTexts().then(setSiteTexts),
-      api.getTestimonials().then(setTestimonials)
+      api.getProducts().then(res => {
+        setProducts(res);
+        localStorage.setItem('bm_products', JSON.stringify(res));
+      }),
+      api.getSiteImages().then(res => {
+        setSiteImages(res);
+        localStorage.setItem('bm_images', JSON.stringify(res));
+      }),
+      api.getSiteTexts().then(res => {
+        setSiteTexts(res);
+        localStorage.setItem('bm_texts', JSON.stringify(res));
+      }),
+      api.getTestimonials().then(res => {
+        setTestimonials(res);
+        localStorage.setItem('bm_testimonials', JSON.stringify(res));
+      })
     ]).catch(console.error).finally(() => setIsLoadingData(false));
     
     // Auth Session Listener
@@ -2973,18 +2995,20 @@ export default function App() {
             />
           </>
         ) : activeView === 'admin' && user?.isAdmin ? (
-          <AdminDashboard 
-            activeTab={adminTab}
-            onTabChange={setAdminTab}
-            products={products}
-            onProductsUpdate={setProducts}
-            siteImages={siteImages}
-            onSiteImagesUpdate={setSiteImages}
-            testimonials={testimonials}
-            onTestimonialsUpdate={setTestimonials}
-            siteTexts={siteTexts}
-            onSiteTextsUpdate={setSiteTexts}
-          />
+          <React.Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center"><Loader2 className="w-12 h-12 text-primary animate-spin" /></div>}>
+            <AdminDashboard 
+              activeTab={adminTab}
+              onTabChange={setAdminTab}
+              products={products}
+              onProductsUpdate={setProducts}
+              siteImages={siteImages}
+              onSiteImagesUpdate={setSiteImages}
+              testimonials={testimonials}
+              onTestimonialsUpdate={setTestimonials}
+              siteTexts={siteTexts}
+              onSiteTextsUpdate={setSiteTexts}
+            />
+          </React.Suspense>
         ) : (
           <ArtStudio 
             onApprove={handleApproveArt}
