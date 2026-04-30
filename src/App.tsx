@@ -500,7 +500,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="h2" 
-            className="text-5xl lg:text-7xl font-black tracking-tighter leading-none" 
+            className="text-5xl lg:text-7xl font-black tracking-tighter leading-none text-[#3A1B42]" 
           />
           <EditableText 
             id="studio_desc" 
@@ -508,7 +508,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="p" 
-            className="text-xl text-muted-foreground max-w-xl font-medium leading-relaxed" 
+            className="text-xl text-[#4A2B52]/90 max-w-xl font-semibold leading-relaxed" 
           />
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-border">
@@ -589,7 +589,7 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="h2" 
-            className="text-5xl lg:text-7xl font-black tracking-tighter leading-none text-foreground" 
+            className="text-5xl lg:text-7xl font-black tracking-tighter leading-none text-[#3A1B42]" 
           />
           <EditableText 
             id="about_desc" 
@@ -597,12 +597,12 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="p" 
-            className="text-xl text-muted-foreground max-w-xl font-medium leading-relaxed" 
+            className="text-xl text-[#4A2B52]/90 max-w-xl font-semibold leading-relaxed" 
           />
 
         </div>
-        <div className="flex-1 relative w-full">
-          <div className="grid grid-cols-2 gap-4 relative">
+        <div className="flex-1 relative w-full max-w-[800px]">
+          <div className="grid grid-cols-2 gap-6 relative">
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
               className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative"
@@ -852,12 +852,12 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
 
     {/* Left Side: Hero Image Grid */}
     <div className="relative flex items-center justify-center">
-      <div className="relative w-full max-w-[650px] grid grid-cols-2 gap-4">
+      <div className="relative w-full max-w-[800px] grid grid-cols-2 gap-6">
         <motion.div 
           initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1 }}
-          className="relative aspect-[5/4] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+          className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-primary/30 border-4 border-white/80"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage1} alt="Coleção Belle Mimo 1" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -868,7 +868,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.1 }}
-          className="relative aspect-[5/4] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white mt-8"
+          className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-secondary/30 border-4 border-white/80 mt-8"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage2} alt="Coleção Belle Mimo 2" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -879,7 +879,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="relative aspect-[5/4] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white -mt-8"
+          className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-accent/40 border-4 border-white/80 -mt-8"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage3} alt="Coleção Belle Mimo 3" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -890,7 +890,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           initial={{ opacity: 0, scale: 0.8, rotate: 2 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="relative aspect-[5/4] bg-white p-2 rounded-[2rem] shadow-xl border-4 border-white"
+          className="relative aspect-[5/4] bg-white p-3 rounded-[2.5rem] shadow-2xl shadow-primary/30 border-4 border-white/80"
         >
           <div className="w-full h-full rounded-[1.5rem] overflow-hidden relative">
             <img src={bgImage4} alt="Coleção Belle Mimo 4" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -914,7 +914,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="h1" 
-          className="font-heading text-5xl lg:text-7xl font-black leading-[0.9] mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-tighter" 
+          className="font-heading text-5xl lg:text-7xl font-black leading-[0.9] mb-8 text-[#3A1B42] tracking-tighter drop-shadow-sm" 
         />
         <EditableText 
           id="hero_subtitle" 
@@ -922,7 +922,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="p" 
-          className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed font-medium" 
+          className="text-xl text-[#4A2B52]/90 max-w-lg mb-12 leading-relaxed font-semibold" 
         />
         <Button 
           onClick={onExploreClick}
