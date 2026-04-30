@@ -571,7 +571,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
 );
 };
 
-const AboutUs = ({ siteImages, siteTexts, isEditMode }: { siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean }) => {
+const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteImages: SiteImage[], siteTexts: SiteText[], isEditMode: boolean, onExploreClick: () => void }) => {
   const images = siteImages.filter(i => i.category === 'Quem Somos');
   const img1 = images.find(i => i.id === 'about_img1')?.image || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80';
   const img2 = images.find(i => i.id === 'about_img2')?.image || 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=400&q=80';
@@ -599,6 +599,15 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode }: { siteImages: SiteImage[
             tag="p" 
             className="text-xl text-muted-foreground max-w-xl font-medium leading-relaxed" 
           />
+          <div className="pt-4">
+            <Button 
+              onClick={onExploreClick}
+              className="h-16 rounded-full bg-secondary hover:bg-secondary/90 px-12 text-lg font-bold shadow-xl shadow-secondary/20 group"
+            >
+              <EditableText id="about_btn" fallback="CONHEÇA NOSSOS PRODUTOS" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </Button>
+          </div>
         </div>
         <div className="flex-1 relative w-full">
           <div className="grid grid-cols-2 gap-4 relative">
@@ -2900,6 +2909,7 @@ export default function App() {
               siteImages={siteImages}
               siteTexts={siteTexts}
               isEditMode={isVisualEditMode}
+              onExploreClick={() => scrollTo('products')}
             />
             <CollectionHighlights 
               products={products}
