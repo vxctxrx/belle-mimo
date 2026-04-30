@@ -579,7 +579,7 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
   const img4 = images.find(i => i.id === 'about_img4')?.image || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=400&q=80';
 
   return (
-  <section className="py-24 px-6 lg:px-12 bg-white relative overflow-hidden">
+  <section className="py-24 px-6 lg:px-12 bg-gradient-to-t from-background to-muted/50 relative overflow-hidden">
     <div className="max-w-7xl mx-auto relative z-10">
       <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
         <div className="flex-1 space-y-8">
@@ -605,25 +605,25 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
           <div className="grid grid-cols-2 gap-4 relative">
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative"
             >
               <img src={img1} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-secondary/20 border-4 border-white mt-8 relative"
             >
               <img src={img2} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white -mt-8 relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-accent/30 border-4 border-white -mt-8 relative"
             >
               <img src={img3} className="w-full h-full object-cover" />
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 2 }}
-              className="aspect-square rounded-3xl overflow-hidden shadow-xl border-4 border-white relative"
+              className="aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-primary/20 border-4 border-white relative"
             >
               <img src={img4} className="w-full h-full object-cover" />
             </motion.div>
@@ -672,7 +672,7 @@ const Navbar = ({
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md border-b border-border px-6 lg:px-12 h-24 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-primary/5 via-background/90 to-secondary/5 backdrop-blur-md border-b-2 border-primary/10 px-6 lg:px-12 h-24 flex items-center justify-between">
       <Logo onClick={() => {
         onViewChange('home');
         onCategoryClick('TODOS');
@@ -834,7 +834,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
   const bgImage4 = siteImages.find(img => img.id === 'hero_bg4')?.image || "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=400&q=80";
 
   return (
-  <section className="relative w-full min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden px-6 lg:px-12 py-12 gap-12">
+  <section className="relative w-full min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 overflow-hidden px-6 lg:px-12 py-12 gap-12 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
     {/* Floating Elements */}
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <motion.div 
@@ -914,7 +914,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="h1" 
-          className="font-heading text-5xl lg:text-7xl font-black leading-[0.9] mb-8 text-foreground tracking-tighter" 
+          className="font-heading text-5xl lg:text-7xl font-black leading-[0.9] mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-tighter" 
         />
         <EditableText 
           id="hero_subtitle" 
@@ -942,7 +942,7 @@ const ProductCard: React.FC<{ product: Product; onClick: (p: Product) => void; i
     <motion.div 
       whileHover={{ y: -8, scale: 1.02 }}
       onClick={() => onClick(product)}
-      className="bg-white p-4 rounded-[2rem] flex flex-col shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(157,80,187,0.1)] transition-all duration-300 border border-border/50 group cursor-pointer"
+      className="bg-white p-4 rounded-[2rem] flex flex-col shadow-lg hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 border-2 border-border/50 hover:border-primary/30 group cursor-pointer"
     >
       <div className="w-full aspect-square bg-muted rounded-[1.5rem] mb-4 flex items-center justify-center overflow-hidden relative">
         <img 
