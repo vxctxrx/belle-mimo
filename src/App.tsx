@@ -932,7 +932,13 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           tag="p" 
           className="text-xl text-muted-foreground max-w-lg mb-12 leading-relaxed font-medium" 
         />
-        {/* Button removed as requested */}
+        <Button 
+          onClick={onExploreClick}
+          className="h-16 rounded-full bg-primary hover:bg-primary/90 px-12 text-lg font-bold shadow-xl shadow-primary/20 group uppercase tracking-widest"
+        >
+          <EditableText id="hero_btn" fallback="CONHEÇA NOSSOS PRODUTOS" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+        </Button>
       </motion.div>
     </div>
   </section>
