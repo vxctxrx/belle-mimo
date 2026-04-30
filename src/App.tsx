@@ -87,14 +87,16 @@ const EditableText = ({
   siteTexts, 
   isEditMode, 
   className, 
-  tag: Tag = "span" 
+  tag: Tag = "span",
+  noTranslate = false
 }: { 
   id: string, 
   fallback: string, 
   siteTexts?: SiteText[], 
   isEditMode: boolean, 
   className?: string, 
-  tag?: keyof JSX.IntrinsicElements 
+  tag?: keyof JSX.IntrinsicElements,
+  noTranslate?: boolean
 }) => {
   const [text, setText] = React.useState(fallback);
   
@@ -124,7 +126,8 @@ const EditableText = ({
 
   return (
     <Tag 
-      className={`${className || ''} ${isEditMode ? 'outline-dashed outline-2 outline-primary/50 cursor-text hover:outline-primary transition-all rounded-sm ui-editable' : ''}`}
+      className={`${className || ''} ${isEditMode ? 'outline-dashed outline-2 outline-primary/50 cursor-text hover:outline-primary transition-all rounded-sm ui-editable' : ''} ${noTranslate ? 'notranslate' : ''}`}
+      translate={noTranslate ? "no" : undefined}
       contentEditable={isEditMode}
       suppressContentEditableWarning={true}
       onBlur={isEditMode ? handleBlur : undefined}
@@ -679,14 +682,14 @@ const Navbar = ({
           onClick={() => onViewChange('home')}
           className={`transition-all hover:scale-110 active:scale-95 uppercase ${activeView === 'home' ? 'text-primary' : 'hover:text-secondary'}`}
         >
-          <EditableText id="menu_home" fallback="HOME" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" />
+          <EditableText id="menu_home" fallback="HOME" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" noTranslate />
         </button>
         {user?.isAdmin && (
           <button 
             onClick={() => onViewChange('studio')}
             className={`transition-all hover:scale-110 active:scale-95 uppercase flex items-center gap-2 ${activeView === 'studio' ? 'text-primary' : 'hover:text-secondary'}`}
           >
-            <EditableText id="menu_studio" fallback="ESTÚDIO" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" /> <Sparkles className="w-4 h-4" />
+            <EditableText id="menu_studio" fallback="ESTÚDIO" siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" noTranslate /> <Sparkles className="w-4 h-4" />
           </button>
         )}
         {menuCategories.map((item) => (
@@ -698,7 +701,7 @@ const Navbar = ({
             }}
             className="hover:text-secondary transition-all hover:scale-110 active:scale-95 uppercase"
           >
-            <EditableText id={`menu_cat_${item.toLowerCase()}`} fallback={item} siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" />
+            <EditableText id={`menu_cat_${item.toLowerCase()}`} fallback={item} siteTexts={siteTexts} isEditMode={isVisualEditMode} tag="span" noTranslate />
           </button>
         ))}
         {user?.isAdmin && (
@@ -1212,7 +1215,7 @@ const Footer = ({
                   onClick={() => onCategoryClick(cat.toUpperCase())}
                   className="hover:text-secondary transition-colors"
                 >
-                  <EditableText id={`menu_cat_${cat.toLowerCase()}`} fallback={cat} siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
+                  <EditableText id={`menu_cat_${cat.toLowerCase()}`} fallback={cat} siteTexts={siteTexts} isEditMode={isEditMode} tag="span" noTranslate />
                 </button>
               </li>
             ))}
