@@ -28,6 +28,9 @@ import {
   Upload,
   Image as ImageIcon,
   Sparkles,
+  Gift,
+  Camera,
+  Brush,
   Loader2,
   LogOut,
   X,
@@ -496,7 +499,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
           {/* Badge removed */}
           <EditableText 
             id="studio_title" 
-            fallback="Transforme suas <br /> <span class='text-primary italic'>Fotos em Arte</span>" 
+            fallback="Transforme suas <br /> <span class='text-primary italic'>Fotos em Arte 🎨</span>" 
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="h2" 
@@ -563,7 +566,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
           </div>
           {/* Decorative Sparkles */}
           <Sparkles className="absolute -top-8 -right-8 w-16 h-16 text-accent animate-pulse" />
-          <Sparkles className="absolute -bottom-8 -left-8 w-12 h-12 text-primary animate-pulse delay-700" />
+          <Brush className="absolute -bottom-8 -left-8 w-12 h-12 text-primary animate-pulse delay-700" />
         </div>
       </div>
     </div>
@@ -585,7 +588,7 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
         <div className="flex-1 space-y-8">
           <EditableText 
             id="about_title" 
-            fallback="Quem <br /> <span class='text-secondary italic'>Somos</span>" 
+            fallback="Quem <br /> <span class='text-secondary italic'>Somos ❤️</span>" 
             siteTexts={siteTexts} 
             isEditMode={isEditMode} 
             tag="h2" 
@@ -630,7 +633,7 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
           </div>
           {/* Decorative Sparkles */}
           <Sparkles className="absolute -top-8 -left-8 w-16 h-16 text-secondary animate-pulse" />
-          <Sparkles className="absolute -bottom-8 -right-8 w-12 h-12 text-primary animate-pulse delay-700" />
+          <Camera className="absolute -bottom-8 -right-8 w-12 h-12 text-primary animate-pulse delay-700" />
         </div>
       </div>
     </div>
@@ -840,14 +843,24 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
       <motion.div 
         animate={{ y: [0, -30, 0], rotate: [0, 10, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-[10%] w-24 h-24 bg-accent/20 rounded-3xl" 
-      />
+        className="absolute top-20 left-[10%] w-24 h-24 bg-accent/20 rounded-3xl flex items-center justify-center text-accent/50" 
+      >
+        <Sparkles className="w-12 h-12" />
+      </motion.div>
       <motion.div 
         animate={{ y: [0, 30, 0], rotate: [0, -10, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-20 right-[10%] w-32 h-32 bg-secondary/10 rounded-full" 
-      />
-      {/* Decorative element removed */}
+        className="absolute bottom-20 right-[10%] w-32 h-32 bg-secondary/10 rounded-full flex items-center justify-center text-secondary/40" 
+      >
+        <Gift className="w-16 h-16" />
+      </motion.div>
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 15, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/3 right-[30%] text-primary/10" 
+      >
+        <Heart className="w-24 h-24" />
+      </motion.div>
     </div>
 
     {/* Left Side: Hero Image Grid */}
@@ -910,7 +923,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
       >
         <EditableText 
           id="hero_title" 
-          fallback="Transformando momentos em memórias duradouras." 
+          fallback="Transformando momentos em memórias duradouras ✨" 
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="h1" 
@@ -918,7 +931,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
         />
         <EditableText 
           id="hero_subtitle" 
-          fallback="Descubra a arte da personalização. Cada mimo é planejado cuidadosamente com seu toque especial." 
+          fallback="Descubra a arte da personalização. Cada mimo é planejado cuidadosamente com seu toque especial 💝" 
           siteTexts={siteTexts} 
           isEditMode={isEditMode} 
           tag="p" 
