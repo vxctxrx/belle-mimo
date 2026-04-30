@@ -599,15 +599,7 @@ const AboutUs = ({ siteImages, siteTexts, isEditMode, onExploreClick }: { siteIm
             tag="p" 
             className="text-xl text-muted-foreground max-w-xl font-medium leading-relaxed" 
           />
-          <div className="pt-4">
-            <Button 
-              onClick={onExploreClick}
-              className="h-16 rounded-full bg-secondary hover:bg-secondary/90 px-12 text-lg font-bold shadow-xl shadow-secondary/20 group"
-            >
-              <EditableText id="about_btn" fallback="CONHEÇA NOSSOS PRODUTOS" siteTexts={siteTexts} isEditMode={isEditMode} tag="span" />
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-            </Button>
-          </div>
+
         </div>
         <div className="flex-1 relative w-full">
           <div className="grid grid-cols-2 gap-4 relative">
