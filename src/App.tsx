@@ -1306,6 +1306,8 @@ const AuthModal = ({
   });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [isSuccess, setIsSuccess] = React.useState(false);
+  const [isAwaitingConfirmation, setIsAwaitingConfirmation] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -1342,76 +1344,74 @@ const AuthModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      setIsSuccess(true);
+      setIsSubmitting(true);
+      setErrors({});
       
       try {
         if (isLogin) {
-          // Attempt admin login via Supabase
           const { data, error } = await supabase.auth.signInWithPassword({
             email: formData.email,
             password: formData.password
           });
           
-          if (!error && data?.user) {
-            // Admin successfully logged in
+          if (error) {
+            if (error.message.includes('Email not confirmed')) {
+              setErrors({ email: 'Por favor, confirme seu e-mail antes de fazer login.' });
+            } else {
+              setErrors({ email: 'E-mail ou senha incorretos.' });
+            }
+            setIsSubmitting(false);
+            return;
+          }
+
+          if (data?.user) {
+            // Check if admin by email or metadata
+            const isAdmin = data.user.email?.toLowerCase().includes('admin') || data.user.user_metadata?.isAdmin === true;
             onLogin({
-              name: data.user.user_metadata?.name || 'Administrador',
+              name: data.user.user_metadata?.name || 'Usuário Belle Mimo',
               email: data.user.email!,
-              cpf: '000.000.000-00',
-              birthDate: '',
-              cep: '',
-              address: '',
-              isAdmin: true
+              cpf: data.user.user_metadata?.cpf || '000.000.000-00',
+              birthDate: data.user.user_metadata?.birthDate || '',
+              cep: data.user.user_metadata?.cep || '',
+              address: data.user.user_metadata?.address || '',
+              isAdmin: isAdmin
             });
+            setIsSuccess(true);
             setTimeout(() => {
               setIsSuccess(false);
               onClose();
             }, 2000);
+          }
+        } else {
+          // Signup
+          const { data, error } = await supabase.auth.signUp({
+            email: formData.email,
+            password: formData.password,
+            options: {
+              data: {
+                name: formData.name,
+                cpf: formData.cpf,
+                birthDate: formData.birthDate,
+                cep: formData.cep,
+                address: formData.address,
+              }
+            }
+          });
+          
+          if (error) {
+            setErrors({ email: error.message });
+            setIsSubmitting(false);
             return;
           }
-          
-          // Se falhou no Supabase, assumimos que pode ser um cliente comum
-          if (formData.email.toLowerCase().includes('admin')) {
-             setIsSuccess(false);
-             setErrors({ email: 'Credenciais incorretas.' });
-             return;
-          }
 
-          // Fake customer login
-          let userData: UserData = {
-            name: formData.name || 'Usuário Belle Mimo',
-            email: formData.email,
-            cpf: '000.000.000-00',
-            birthDate: '',
-            cep: '',
-            address: ''
-          };
-          setTimeout(() => {
-            setIsSuccess(false);
-            onLogin(userData);
-            onClose();
-          }, 2000);
-        } else {
-          // Fake customer signup
-          let userData: UserData = {
-            name: formData.name || 'Usuário Belle Mimo',
-            email: formData.email,
-            cpf: formData.cpf || '000.000.000-00',
-            birthDate: formData.birthDate || '',
-            cep: formData.cep || '',
-            address: formData.address || ''
-          };
-          
-          setTimeout(() => {
-            setIsSuccess(false);
-            onLogin(userData);
-            onClose();
-          }, 2000);
+          setIsAwaitingConfirmation(true);
+          // O modal ficará aberto aguardando o usuário confirmar no e-mail
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setIsSuccess(false);
-        setErrors({ email: 'Erro de conexão.' });
+        setErrors({ email: 'Erro de conexão com o servidor.' });
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -1454,12 +1454,33 @@ const AuthModal = ({
                   className="text-center py-12"
                 >
                   <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Star className="w-12 h-12 fill-current" />
+                    <CheckCircle2 className="w-12 h-12" />
                   </div>
                   <h2 className="font-heading text-3xl font-bold mb-4 text-green-600">Sucesso!</h2>
-                  <p className="text-muted-foreground font-medium">
-                    {isLogin ? 'Bem-vindo de volta à Belle Mimo!' : 'Seu cadastro foi realizado com carinho!'}
+                  <p className="text-muted-foreground font-medium">Bem-vindo de volta à Belle Mimo!</p>
+                </motion.div>
+              ) : isAwaitingConfirmation ? (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12 flex flex-col items-center justify-center"
+                >
+                  <div className="w-24 h-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Star className="w-12 h-12 fill-current animate-pulse" />
+                  </div>
+                  <h2 className="font-heading text-3xl font-bold mb-4 text-primary">Quase lá!</h2>
+                  <p className="text-muted-foreground font-medium mb-6">
+                    Seu cadastro foi realizado com carinho. Enviamos um link de confirmação para o seu e-mail: <strong>{formData.email}</strong>
                   </p>
+                  <p className="text-sm text-primary font-bold">
+                    Por favor, verifique sua caixa de entrada e spam, e clique no link para ativar sua conta.
+                  </p>
+                  <Button 
+                    onClick={onClose}
+                    className="mt-8 rounded-full bg-primary hover:bg-primary/90 text-white font-bold px-8 h-12"
+                  >
+                    Entendido
+                  </Button>
                 </motion.div>
               ) : (
                 <>
@@ -1566,8 +1587,18 @@ const AuthModal = ({
                       {errors.password && <p className="text-xs text-destructive ml-4 font-bold">{errors.password}</p>}
                     </div>
                     
-                    <Button type="submit" className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-lg font-bold shadow-lg shadow-primary/30 mt-6">
-                      {isLogin ? 'ENTRAR' : 'FINALIZAR CADASTRO'}
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-lg font-bold shadow-lg shadow-primary/30 mt-6"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                      ) : isLogin ? (
+                        'ENTRAR'
+                      ) : (
+                        'FINALIZAR CADASTRO'
+                      )}
                     </Button>
                   </form>
 
@@ -2719,28 +2750,30 @@ export default function App() {
     // Auth Session Listener
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
+        const isAdmin = session.user.email?.toLowerCase().includes('admin') || session.user.user_metadata?.isAdmin === true;
         setUser({
-          name: session.user.user_metadata?.name || 'Administrador',
+          name: session.user.user_metadata?.name || 'Usuário Belle Mimo',
           email: session.user.email!,
-          cpf: '000.000.000-00',
-          birthDate: '',
-          cep: '',
-          address: '',
-          isAdmin: true
+          cpf: session.user.user_metadata?.cpf || '000.000.000-00',
+          birthDate: session.user.user_metadata?.birthDate || '',
+          cep: session.user.user_metadata?.cep || '',
+          address: session.user.user_metadata?.address || '',
+          isAdmin: isAdmin
         });
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
+        const isAdmin = session.user.email?.toLowerCase().includes('admin') || session.user.user_metadata?.isAdmin === true;
         setUser({
-          name: session.user.user_metadata?.name || 'Administrador',
+          name: session.user.user_metadata?.name || 'Usuário Belle Mimo',
           email: session.user.email!,
-          cpf: '000.000.000-00',
-          birthDate: '',
-          cep: '',
-          address: '',
-          isAdmin: true
+          cpf: session.user.user_metadata?.cpf || '000.000.000-00',
+          birthDate: session.user.user_metadata?.birthDate || '',
+          cep: session.user.user_metadata?.cep || '',
+          address: session.user.user_metadata?.address || '',
+          isAdmin: isAdmin
         });
       } else {
         setUser(null);
