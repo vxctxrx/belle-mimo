@@ -490,7 +490,7 @@ const StudioHighlight = ({ onGoToStudio, siteImages, siteTexts, isEditMode, isAd
     <div className="max-w-7xl mx-auto relative z-10">
       <div className="flex flex-col lg:flex-row items-center gap-16">
         <div className="flex-1 space-y-8">
-          <Badge className="bg-accent text-accent-foreground px-6 py-2 rounded-full font-bold">TECNOLOGIA ✨</Badge>
+          {/* Badge removed */}
           <EditableText 
             id="studio_title" 
             fallback="Transforme suas <br /> <span class='text-primary italic'>Fotos em Arte</span>" 
@@ -843,11 +843,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-20 right-[10%] w-32 h-32 bg-secondary/10 rounded-full" 
       />
-      <motion.div 
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" 
-      />
+      {/* Decorative element removed */}
     </div>
 
     {/* Left Side: Hero Image Grid */}
@@ -897,21 +893,7 @@ const Hero = ({ onExploreClick, siteImages, siteTexts, isEditMode }: { onExplore
           </div>
         </motion.div>
 
-        {/* Playful Badge */}
-        <motion.div 
-          animate={{ rotate: [0, 5, -5, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute -top-6 -right-6 bg-accent p-6 rounded-full shadow-lg border-4 border-white transform rotate-12 z-10 flex items-center justify-center"
-        >
-          <EditableText 
-            id="hero_badge" 
-            fallback="FEITO <br /> COM AMOR" 
-            siteTexts={siteTexts} 
-            isEditMode={isEditMode} 
-            tag="div" 
-            className="font-heading font-black tracking-wider uppercase text-accent-foreground text-center leading-tight" 
-          />
-        </motion.div>
+        {/* Playful Badge removed */}
       </div>
     </div>
 
